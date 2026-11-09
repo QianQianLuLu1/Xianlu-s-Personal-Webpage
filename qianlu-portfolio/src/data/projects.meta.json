@@ -1,0 +1,10 @@
+{
+  "syncedAt": null,
+  "degraded": false,
+  "reconstructed": true,
+  "reconstruction": {
+    "source": "dist/assets/index-zcH8GVbu.js",
+    "distMtime": "2026-11-07T16:33:09.228Z",
+    "note": "原 projects.generated.ts / projects.fallback.ts / projects.meta.json 于 2026-11-08 晚丢失；数据字面量从该 dist 构建逐字提取，原始 syncedAt 不可考。构建需 QIANLU_ACCEPT_RECONSTRUCTED_BASELINE=1 显式放行；网络恢复后应执行 npm run github:sync -- --force 重建联网基线。"
+  }
+}

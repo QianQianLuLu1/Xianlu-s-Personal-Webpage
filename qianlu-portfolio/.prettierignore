@@ -1,0 +1,9 @@
+node_modules
+dist
+build
+*.lock
+
+# 自动生成文件：由脚本统一格式化，prettier 不参与（否则引号风格会被改成 JSON 风格）
+src/data/projects.generated.ts
+src/data/projects.meta.json
+src/data/photos.generated.ts

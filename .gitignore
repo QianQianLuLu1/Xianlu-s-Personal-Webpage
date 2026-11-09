@@ -1,0 +1,88 @@
+# ---------------------------------------------------------------------------
+# 工作区 Git 边界（2026-09-25 首次纳入版本控制）
+# 原则：只跟踪代码 / 配置 / 可复现的 Agent 资产；一切可再生产物与大体积二进制
+#       保持未跟踪，避免历史膨胀。素材类内容当前不入库（见下方「大体积素材」段）。
+# ---------------------------------------------------------------------------
+
+# ---- 依赖与构建产物 ----
+node_modules/
+dist/
+dist-ssr/
+*.tsbuildinfo
+
+# ---- 日志与本地临时件 ----
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+*.local
+.DS_Store
+Thumbs.db
+*.suo
+*.user
+idea/
+.vscode/
+
+# ---- 大体积素材（本轮明确不入库）----
+素材/
+
+# ---- GUI 验证产物：浏览器 Profile 与截图输出目录 ----
+# 说明：根目录 gui-test-screenshots/ 下的 *.png 验收截图当前也不入库，
+#       因为它们与 .edge-profile-* 同属一次验证运行的产物。
+gui-test-screenshots/
+qianlu-portfolio/gui-test-screenshots/
+qianlu-portfolio/verify-shots/
+.edge-profile-*/
+
+# ---- Better Harness 报告输出（每次运行再生成）----
+.qoder/better-harness/
+.qoder/better-harness-runs/
+
+# ---- 代理工具状态 / 派生索引（可再生，非源资产）----
+.codegraph/
+.mimosa/
+qianlu-portfolio/.mimosa/
+.codebuddy/
+
+# ---- 通用补全（增量追加，上方原文不变）----
+# 本地私密配置：保留可提交的示例模板
+.env
+.env.*
+!.env.example
+!.env.sample
+
+# 测试覆盖率与工具缓存
+coverage/
+.vite/
+.eslintcache
+
+# 编辑器与操作系统杂项（上方已有 .DS_Store / Thumbs.db / *.suo / *.user / idea/ / .vscode/）
+.idea/
+*.swp
+*.swo
+*~
+Desktop.ini
+ehthumbs.db
+
+# ---- 防御性补全：Agent 工作目录与顶层本地资产 ----
+# .workbuddy/、.zcode/ 位于本仓库内，含本地会话记录与本机路径信息，不应入库。
+# .meituan-catpaw/、qwenwork/ 位于本 git 仓库根之外，登记为防御性规则（仓库根上移时生效）。
+# 不带路径前缀的模式匹配任意层级，顶层同名目录一并覆盖；
+# .mimosa/、.codegraph/、.codebuddy/、.qoder/better-harness*/ 已在上方忽略，不重复。
+# 不忽略整个 .qoder/：.qoder/rules/ 与 .qoder/commands/ 需继续跟踪（README 有相对链接）。
+.workbuddy/
+.zcode/
+.meituan-catpaw/
+qwenwork/
+
+# ---- 本地一次性验收产物（精确清单，不使用通配）----
+/qianlu-portfolio/GitHub专区同步改造实施计划_2026-11-06.md
+/qianlu-portfolio/GitHub专区同步改造验收报告_2026-11-06.md
+/qianlu-portfolio/verify-console.mjs
+/qianlu-portfolio/verify-github-sync.mjs
+/qianlu-portfolio/verify-links-and-html.mjs
+/qianlu-portfolio/全量GUI黑盒验收实施计划_2026-11-07.md
+/qianlu-portfolio/全量GUI黑盒验收报告_2026-10-03.md
+/qianlu-portfolio/全量GUI黑盒验收报告_2026-11-06.md
+/qianlu-portfolio/全量GUI黑盒验收报告_2026-11-07.md

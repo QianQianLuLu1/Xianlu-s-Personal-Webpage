@@ -1,0 +1,21 @@
+{
+  "name": "qianlu-workspace",
+  "private": true,
+  "license": "MIT",
+  "engines": { "node": ">=22.22.2" },
+  "description": "工作区命令代理层：把常用 npm 命令转发到 qianlu-portfolio 子项目，不含任何依赖。",
+  "scripts": {
+    "dev": "npm --prefix qianlu-portfolio run dev",
+    "build": "npm --prefix qianlu-portfolio run build",
+    "typecheck": "npm --prefix qianlu-portfolio run typecheck",
+    "lint": "npm --prefix qianlu-portfolio run lint",
+    "format": "npm --prefix qianlu-portfolio run format",
+    "test": "npm --prefix qianlu-portfolio run test",
+    "test:watch": "npm --prefix qianlu-portfolio run test:watch",
+    "preview": "npm --prefix qianlu-portfolio run preview",
+    "assets:build": "npm --prefix qianlu-portfolio run assets:build",
+    "github:sync": "npm --prefix qianlu-portfolio run github:sync",
+    "audit:licenses": "npm --prefix qianlu-portfolio run audit:licenses",
+    "bootstrap": "npm --prefix qianlu-portfolio install"
+  }
+}

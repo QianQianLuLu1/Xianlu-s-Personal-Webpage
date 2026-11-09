@@ -1,0 +1,1130 @@
+@import 'tailwindcss';
+
+/* Tailwind v4 的暗色模式改为 class 策略（等价于 v3 的 darkMode: ['class']） */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * 按下态变体：指针按下（:active，浏览器在松开/移出/pointercancel 时自动恢复）
+ * 与键盘按下（data-kb-press 镜像属性，见 src/lib/press.ts）合并为同一个 press: 前缀。
+ * :active 对键盘不生效，故由 hook 补上属性；两路信号共用同一套 press: 样式。
+ */
+@custom-variant press (&:where(:active, [data-kb-press="true"]));
+
+/*
+ * ═══ 色彩令牌（Apple 发布会风格）═══
+ * 原始色只在本节定义；组件与主题类一律引用语义令牌或原始令牌。
+ * 兼容别名 --brand-* 保留，使既有 bg-cream / text-ink / text-clay 等
+ * utility 无需改动即可换肤。
+ */
+:root {
+  /* 中性 */
+  --neutral-0: #ffffff;
+  --neutral-50: #f5f5f7;
+  --neutral-200: #e8e8ed;
+  --neutral-900: #1d1d1f;
+  --neutral-950: #000000;
+
+  /* 高能猛进 */
+  --energy-1: #f06620;
+  --energy-2: #eeb355;
+  --energy-3: #164bc5;
+  --energy-4: #7baed1;
+
+  /* 神通妙彩 */
+  --spectrum-1: #a07ac7;
+  --spectrum-2: #8580c7;
+  --spectrum-3: #7189bc;
+  --spectrum-4: #659955;
+
+  /* 超拉风 */
+  --deep-1: #024f97;
+  --deep-2: #1d6eb6;
+
+  /* 极致轻薄 */
+  --air-1: #4e5d68;
+  --air-2: #647582;
+  --air-3: #929fab;
+
+  /* 嘿 Siri */
+  --siri-1: #fd9f59;
+  --siri-2: #f487a3;
+  --siri-3: #c488c8;
+  --siri-4: #81c4fd;
+
+  /* 美美写照 */
+  --photo-1: #8846aa;
+  --photo-2: #b93886;
+
+  /* 都来看我（四色渐变） */
+  --vitality-1: #398ffe;
+  --vitality-2: #7f50f3;
+  --vitality-3: #e6529f;
+  --vitality-4: #f66941;
+
+  /* hello 基础盘 */
+  --hello-1: #c9d54f;
+  --hello-2: #e6ca45;
+  --hello-3: #dc5849;
+  --hello-4: #e87753;
+  --hello-5: #905db0;
+  --hello-6: #3968b9;
+
+  /* 运行时语义 */
+  --surface: var(--neutral-0);
+  --surface-muted: var(--neutral-50);
+  --ink: var(--neutral-900);
+  --line: var(--neutral-200);
+  --accent: var(--deep-1);
+  --accent-2: var(--air-1);
+  --on-accent: var(--neutral-0);
+
+  /* 渐变与 hero 默认值 */
+  --gradient-vitality: linear-gradient(
+    90deg,
+    var(--vitality-1),
+    var(--vitality-2),
+    var(--vitality-3),
+    var(--vitality-4)
+  );
+  --hero-gradient: var(--gradient-vitality);
+  --hero-accent: var(--neutral-0);
+  --hero-on-accent: var(--neutral-950);
+  --gradient-text-strong: linear-gradient(90deg, var(--deep-1), var(--photo-1) 55%, var(--photo-2));
+  --gradient-text-fallback: var(--vitality-1);
+  --band-gradient: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--accent) 4%, var(--surface)),
+    var(--surface-muted)
+  );
+  --footer-gradient: linear-gradient(180deg, var(--surface-muted), var(--surface));
+  --hero-scrim: linear-gradient(to bottom, rgb(0 0 0 / 0.55), transparent);
+
+  --aurora-c1: color-mix(in oklab, var(--vitality-1) 30%, transparent);
+  --aurora-c2: color-mix(in oklab, var(--vitality-2) 24%, transparent);
+  --aurora-c3: color-mix(in oklab, var(--vitality-3) 20%, transparent);
+  --aurora-c4: color-mix(in oklab, var(--vitality-4) 18%, transparent);
+  --aurora-grain-opacity: 0.06;
+
+  /* 兼容别名：在 <html> 上完成替换；局部反色请直接覆盖 --brand-* */
+  --brand-cream: var(--surface);
+  --brand-clay: var(--accent);
+  --brand-pine: var(--accent-2);
+  --brand-ink: var(--ink);
+  --brand-hairline: var(--line);
+}
+
+.dark {
+  --surface: var(--neutral-950);
+  --surface-muted: var(--neutral-900);
+  --ink: var(--neutral-50);
+  --line: rgb(255 255 255 / 0.14);
+  color-scheme: dark;
+}
+
+/*
+ * 配色性格：仅挂在 <html> 上（由 index.html 预挂 + usePalette 同步）。
+ * air / spectrum / deep 只覆盖强调色与渐变，surface 仍交给 :root/.dark；
+ * vivid 额外覆盖 surface/ink/line，实现固定黑底。
+ */
+html.palette-air {
+  --accent: var(--deep-1);
+  --accent-2: var(--air-1);
+  --on-accent: var(--neutral-0);
+  --hero-accent: var(--neutral-0);
+  --hero-on-accent: var(--neutral-950);
+  --hero-gradient: var(--gradient-vitality);
+  --gradient-text-fallback: var(--vitality-1);
+  --gradient-text-strong: linear-gradient(90deg, var(--deep-1), var(--photo-1) 55%, var(--photo-2));
+  --band-gradient: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--accent) 4%, var(--surface)),
+    var(--surface-muted)
+  );
+  --footer-gradient: linear-gradient(180deg, var(--surface-muted), var(--surface));
+  --aurora-c1: color-mix(in oklab, var(--vitality-1) 30%, transparent);
+  --aurora-c2: color-mix(in oklab, var(--vitality-2) 24%, transparent);
+  --aurora-c3: color-mix(in oklab, var(--vitality-3) 20%, transparent);
+  --aurora-c4: color-mix(in oklab, var(--vitality-4) 18%, transparent);
+}
+
+html.dark.palette-air {
+  --accent: var(--energy-4);
+  --accent-2: var(--air-3);
+  --on-accent: var(--neutral-950);
+  --gradient-text-strong: linear-gradient(
+    90deg,
+    var(--vitality-1),
+    var(--vitality-3),
+    var(--vitality-4)
+  );
+}
+
+html.palette-vivid {
+  --surface: var(--neutral-950);
+  --surface-muted: color-mix(in oklab, var(--neutral-950) 94%, var(--neutral-0));
+  --ink: var(--neutral-50);
+  --line: rgb(255 255 255 / 0.14);
+  --accent: var(--energy-1);
+  --accent-2: var(--energy-2);
+  --on-accent: var(--neutral-950);
+  --hero-accent: var(--energy-1);
+  --hero-on-accent: var(--neutral-950);
+  --hero-gradient: linear-gradient(
+    90deg,
+    var(--energy-1),
+    var(--energy-2),
+    var(--vitality-1),
+    var(--energy-4)
+  );
+  --gradient-text-fallback: var(--energy-1);
+  --gradient-text-strong: linear-gradient(
+    90deg,
+    var(--vitality-1),
+    var(--vitality-3),
+    var(--vitality-4)
+  );
+  --band-gradient: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--energy-1) 7%, var(--surface)),
+    var(--surface-muted)
+  );
+  --footer-gradient: linear-gradient(180deg, var(--surface), var(--surface-muted));
+  --aurora-c1: color-mix(in oklab, var(--energy-1) 30%, transparent);
+  --aurora-c2: color-mix(in oklab, var(--energy-2) 22%, transparent);
+  --aurora-c3: color-mix(in oklab, var(--vitality-1) 22%, transparent);
+  --aurora-c4: color-mix(in oklab, var(--energy-4) 18%, transparent);
+  color-scheme: dark;
+}
+
+html.palette-spectrum {
+  --accent: var(--photo-1);
+  --accent-2: var(--air-1);
+  --on-accent: var(--neutral-0);
+  --hero-accent: var(--spectrum-1);
+  --hero-on-accent: var(--neutral-950);
+  --hero-gradient: linear-gradient(
+    90deg,
+    var(--spectrum-1),
+    var(--spectrum-2),
+    var(--spectrum-3),
+    var(--spectrum-4)
+  );
+  --gradient-text-fallback: var(--spectrum-1);
+  --gradient-text-strong: linear-gradient(90deg, var(--photo-1), var(--photo-2));
+  --band-gradient: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--spectrum-1) 8%, var(--surface)),
+    color-mix(in oklab, var(--spectrum-3) 6%, var(--surface)) 55%,
+    color-mix(in oklab, var(--spectrum-4) 7%, var(--surface))
+  );
+  --footer-gradient: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--spectrum-1) 6%, var(--surface-muted)),
+    var(--surface)
+  );
+  --aurora-c1: color-mix(in oklab, var(--spectrum-1) 30%, transparent);
+  --aurora-c2: color-mix(in oklab, var(--spectrum-2) 24%, transparent);
+  --aurora-c3: color-mix(in oklab, var(--spectrum-3) 20%, transparent);
+  --aurora-c4: color-mix(in oklab, var(--spectrum-4) 18%, transparent);
+}
+
+html.dark.palette-spectrum {
+  --accent: var(--spectrum-1);
+  --accent-2: var(--air-3);
+  --on-accent: var(--neutral-950);
+  --gradient-text-strong: linear-gradient(
+    90deg,
+    var(--spectrum-1),
+    var(--spectrum-3),
+    var(--spectrum-4)
+  );
+}
+
+html.palette-deep {
+  --accent: var(--deep-1);
+  --accent-2: var(--air-1);
+  --on-accent: var(--neutral-0);
+  --hero-accent: var(--siri-4);
+  --hero-on-accent: var(--neutral-950);
+  --hero-gradient: linear-gradient(90deg, var(--siri-4), var(--energy-4), var(--spectrum-3));
+  --gradient-text-fallback: var(--siri-4);
+  --gradient-text-strong: linear-gradient(90deg, var(--deep-1), var(--deep-2));
+  --band-gradient: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--deep-2) 6%, var(--surface)),
+    color-mix(in oklab, var(--deep-1) 4%, var(--surface))
+  );
+  --footer-gradient: linear-gradient(180deg, var(--deep-2), var(--deep-1));
+  --aurora-c1: color-mix(in oklab, var(--siri-4) 26%, transparent);
+  --aurora-c2: color-mix(in oklab, var(--energy-4) 24%, transparent);
+  --aurora-c3: color-mix(in oklab, var(--spectrum-3) 20%, transparent);
+  --aurora-c4: color-mix(in oklab, var(--deep-2) 30%, transparent);
+}
+
+html.dark.palette-deep {
+  --accent: var(--siri-4);
+  --accent-2: var(--air-3);
+  --on-accent: var(--neutral-950);
+  --gradient-text-strong: linear-gradient(90deg, var(--siri-4), var(--energy-4), var(--spectrum-3));
+}
+
+/*
+ * ═══ 设计令牌扩展（2026-10-02 全站质感升级）═══
+ * 阴影高程 / 动效节奏 / z-index 层级 —— 全站唯一出处，
+ * 组件与页面一律引用令牌，禁止写死样式值。
+ */
+
+/*
+ * 阴影高程：中性色大模糊、低透明度（--shadow-tint 随主题换档），弱投影。
+ * e1 静置面（卡片/下拉/滚动后导航）｜e2 悬浮玻璃控件投影
+ * e3 悬停浮起（卡片 lift 终态）｜e4 浮层/模态环境光 ｜press 按压回落
+ */
+:root {
+  --shadow-tint: 0 0 0;
+  --elev-1:
+    0 1px 2px rgb(var(--shadow-tint) / 0.04), 0 10px 30px -18px rgb(var(--shadow-tint) / 0.14);
+  --elev-2: 0 16px 40px -20px rgb(var(--shadow-tint) / 0.18);
+  --elev-3:
+    0 24px 60px -24px rgb(var(--shadow-tint) / 0.2), 0 8px 20px -12px rgb(var(--shadow-tint) / 0.08);
+  --elev-4:
+    0 0 0 1px rgb(var(--shadow-tint) / 0.04), 0 24px 80px -24px rgb(var(--shadow-tint) / 0.26);
+  --elev-press: 0 6px 16px -8px rgb(var(--shadow-tint) / 0.16);
+}
+
+.dark {
+  --shadow-tint: 0 0 0;
+  --elev-1: 0 1px 2px rgb(var(--shadow-tint) / 0.3), 0 4px 12px -4px rgb(var(--shadow-tint) / 0.35);
+  --elev-2: 0 12px 28px -12px rgb(var(--shadow-tint) / 0.5);
+  --elev-3:
+    0 24px 48px -16px rgb(var(--shadow-tint) / 0.55),
+    0 8px 20px -8px rgb(var(--shadow-tint) / 0.35), 0 2px 6px -2px rgb(var(--shadow-tint) / 0.25);
+  --elev-4: 0 0 4px rgb(var(--shadow-tint) / 0.2), 0 0 20px rgb(var(--shadow-tint) / 0.4);
+  --elev-press: 0 8px 20px -10px rgb(var(--shadow-tint) / 0.35);
+}
+
+/*
+ * 动效节奏：JS 侧镜像见 src/lib/motion.ts（两处数值互为锚点，改动须同步）。
+ * fast 微反馈（悬停/图标切换）｜base 浮层开合/下拉｜slow 入场编排/大位移
+ */
+:root {
+  --duration-fast: 200ms;
+  --duration-base: 300ms;
+  --duration-slow: 600ms;
+  --motion-enter: cubic-bezier(0.22, 1, 0.36, 1); /* 入场缓出 */
+  --motion-swap: cubic-bezier(0.4, 0, 0.2, 1); /* 状态切换 */
+  --motion-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* 弹性过冲（CSS 近似） */
+}
+
+/*
+ * z-index 体系：全站仅两档 + hero 局部 -10（section 内层叠上下文）。
+ * 装饰层 10；chrome 与浮层统一 50（Radix Portal 挂 body，同档依 DOM 顺序
+ * 裁决）。禁止在组件里新造中间档。
+ */
+:root {
+  --z-decor: 10;
+  --z-top: 50;
+}
+
+@theme inline {
+  --color-cream: var(--brand-cream);
+  --color-clay: var(--brand-clay);
+  --color-pine: var(--brand-pine);
+  --color-ink: var(--brand-ink);
+  --color-hairline: var(--brand-hairline);
+  --color-surface-muted: var(--surface-muted);
+  --color-on-accent: var(--on-accent);
+
+  --radius-btn: 12px;
+  --radius-card: 24px;
+
+  /* 阴影高程 → shadow-e1..e4 工具类（原始值见下方 :root 的 --elev-*） */
+  --shadow-e1: var(--elev-1);
+  --shadow-e2: var(--elev-2);
+  --shadow-e3: var(--elev-3);
+  --shadow-e4: var(--elev-4);
+
+  /* 聚焦环语义色 → ring-ring / focus-visible:ring-ring */
+  --color-ring: var(--brand-clay);
+
+  /* 缓动 → ease-enter / ease-swap / ease-spring 工具类（原始值见 :root） */
+  --ease-enter: var(--motion-enter);
+  --ease-swap: var(--motion-swap);
+  --ease-spring: var(--motion-spring);
+
+  /* 流式字号：Hero / 区块标题 / 引导副标题 */
+  --text-display: clamp(2.5rem, 8vw, 6rem);
+  --text-display--line-height: 1.04;
+  --text-display--letter-spacing: -0.035em;
+  --text-title: clamp(2rem, 4.5vw, 3.25rem);
+  --text-title--line-height: 1.1;
+  --text-title--letter-spacing: -0.025em;
+  --text-lead: clamp(1.125rem, 1.5vw, 1.5rem);
+  --text-lead--line-height: 1.45;
+
+  --font-sans:
+    'Inter Variable', 'Inter', 'Noto Sans SC Variable', 'Noto Sans SC', 'Source Han Sans SC',
+    'PingFang SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--brand-cream);
+    color: var(--brand-ink);
+    font-family: var(--font-sans);
+    font-optical-sizing: auto;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* 暗色模式下滚动条跟随主题，避免浅色滚动条割裂观感 */
+  .dark {
+    color-scheme: dark;
+  }
+}
+
+/*
+ * ═══ 发布会首屏 / 主题区块 / 渐变文字 ═══
+ * 局部反色必须直接覆盖 --brand-*：--brand-* 的 var() 在 <html> 上已完成替换，
+ * 后代只继承结果，覆盖语义变量不会回溯影响别名。
+ *
+ * 黑色发布会舞台仅属于暗色模式：令牌覆盖限定在 .dark 下（声明与旧版一致），
+ * 浅色模式 Hero 不再覆盖任何令牌，回退到 :root 语义变量——首屏随主题切换
+ * 即时换肤；「高能猛进」(palette-vivid) 浅色下仍由 html.palette-vivid 锁黑底。
+ */
+.dark .hero-stage {
+  --brand-cream: var(--neutral-950);
+  --brand-ink: var(--neutral-50);
+  --brand-clay: var(--hero-accent);
+  --brand-pine: var(--energy-4);
+  --brand-hairline: rgb(255 255 255 / 0.14);
+  --on-accent: var(--hero-on-accent);
+  --shape-ring: rgb(255 255 255 / 0.14);
+  --shape-ring-alt: color-mix(in oklab, var(--hero-accent) 30%, transparent);
+  --shape-dot: color-mix(in oklab, var(--hero-accent) 50%, transparent);
+  --press-glow-core: rgb(255 255 255 / 0.3);
+  --press-glow-halo: color-mix(in oklab, var(--hero-accent) 24%, transparent);
+}
+
+/* 浅色（非 vivid）：标题改用各配色已定义的浅底 AA 安全渐变
+   （四色渐变橙色端点 #f66941 在白底上对比度约 3:1，处在大字 AA 阈值边缘） */
+html:not(.dark):not(.palette-vivid) .hero-stage {
+  --hero-gradient: var(--gradient-text-strong);
+}
+
+/* 顶部压暗，保证固定导航白字在极光高光上仍有足够对比；
+   仅黑色舞台需要，浅色 Hero 为页面底色，移除黑带 */
+.hero-stage::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 10rem;
+  background: var(--hero-scrim);
+  pointer-events: none;
+}
+
+html:not(.dark):not(.palette-vivid) .hero-stage::before {
+  content: none;
+}
+
+/* 页头首屏态反白：仅暗色（浅色下 Hero 为页面底色，无需反白） */
+.dark .hero-overlay {
+  --brand-cream: var(--neutral-950);
+  --brand-ink: var(--neutral-50);
+  --brand-clay: var(--hero-accent);
+  --brand-pine: var(--energy-4);
+  --brand-hairline: rgb(255 255 255 / 0.14);
+  --on-accent: var(--hero-on-accent);
+}
+
+/* 只设背景图；背景色由 bg-cream 兜底，color-mix 不支持时仍可读 */
+.section-band {
+  background-image: var(--band-gradient);
+}
+
+.site-footer {
+  background-color: var(--brand-cream);
+  background-image: var(--footer-gradient);
+  --footer-muted: color-mix(in srgb, var(--brand-ink) 75%, transparent);
+}
+
+@layer components {
+  /* 放 components 层，让 hover:text-clay 等 utilities 仍可覆盖 */
+  .footer-muted {
+    color: var(--footer-muted);
+  }
+}
+
+html.palette-deep .site-footer {
+  --brand-cream: var(--deep-1);
+  --brand-ink: var(--neutral-0);
+  --brand-hairline: rgb(255 255 255 / 0.16);
+  --brand-clay: var(--neutral-0);
+  --footer-muted: color-mix(in srgb, var(--neutral-0) 90%, transparent);
+}
+
+html.palette-vivid .site-footer {
+  --footer-muted: color-mix(in srgb, var(--neutral-0) 90%, transparent);
+}
+
+/*
+ * 渐变文字：Hero 四色标题用 .text-gradient；
+ * 浅底正文关键词用 .text-gradient-strong（按性格取 AA 安全停靠点）。
+ */
+.text-gradient {
+  color: var(--gradient-text-fallback);
+  background-image: var(--hero-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.text-gradient-strong {
+  color: var(--accent);
+  background-image: var(--gradient-text-strong);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  .text-gradient,
+  .text-gradient-strong {
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+@supports not ((background-clip: text) or (-webkit-background-clip: text)) {
+  .text-gradient,
+  .text-gradient-strong {
+    background-image: none;
+    -webkit-text-fill-color: currentColor;
+  }
+
+  .text-gradient {
+    color: var(--gradient-text-fallback);
+  }
+
+  .text-gradient-strong {
+    color: var(--accent);
+  }
+}
+
+.text-gradient::selection,
+.text-gradient-strong::selection {
+  background: var(--brand-ink);
+  color: var(--brand-cream);
+  -webkit-text-fill-color: var(--brand-cream);
+}
+
+@media (forced-colors: active) {
+  .text-gradient,
+  .text-gradient-strong {
+    background-image: none;
+    color: CanvasText;
+    -webkit-text-fill-color: CanvasText;
+  }
+}
+
+@media print {
+  .text-gradient,
+  .text-gradient-strong {
+    background-image: none;
+    color: var(--ink);
+    -webkit-text-fill-color: currentColor;
+  }
+}
+
+/* 设置面板的配色性格色带：颜色全部来自令牌 */
+.palette-swatch {
+  display: block;
+  width: 4rem;
+  height: 0.375rem;
+  border-radius: 9999px;
+  background-image: var(--swatch-gradient);
+}
+
+.palette-swatch[data-palette='air'] {
+  --swatch-gradient: linear-gradient(90deg, var(--deep-1), var(--air-3));
+}
+
+.palette-swatch[data-palette='vivid'] {
+  --swatch-gradient: linear-gradient(90deg, var(--energy-1), var(--energy-2), var(--vitality-1));
+}
+
+.palette-swatch[data-palette='spectrum'] {
+  --swatch-gradient: linear-gradient(
+    90deg,
+    var(--spectrum-1),
+    var(--spectrum-3),
+    var(--spectrum-4)
+  );
+}
+
+.palette-swatch[data-palette='deep'] {
+  --swatch-gradient: linear-gradient(90deg, var(--deep-2), var(--siri-4));
+}
+
+/*
+ * 2 级毛玻璃：liquid-glass-react 不可用时的降级方案。
+ * 1 级由 GlassSurface 组件挂载 liquid-glass-react 实现。
+ */
+/*
+ * backdrop-filter 的值必须经由 var() 间接引用，且标准属性必须写在
+ * -webkit- 前缀之后：构建期的 lightningcss 会把「标准属性在前」的写法视作
+ * 已被前缀版取代而直接删除（Tailwind 默认 targets 下标准 form 被判定为
+ * 全部不支持），导致 Chromium 下毛玻璃整体失效；webkit 在前 + var() 取值
+ * 可让标准声明原样保留。
+ */
+.glass-tier2 {
+  --glass-backdrop: blur(16px) saturate(160%);
+  /*
+   * OriginOS 式材质增强（全为静态渐变，不依赖 backdrop-filter）：
+   * 顶部高光带模拟上缘受光，上下两条 1px 边缘线勾出玻璃厚度，
+   * 对角透彩折射以低透明品牌色（陶红→松绿）模拟光穿过玻璃的染色。
+   * 明暗差异只动下方令牌，渐变结构两主题共用。
+   */
+  --glass-sheen: rgb(255 255 255 / 0.12);
+  --glass-edge-top: rgb(255 255 255 / 0.5);
+  --glass-edge-bottom: color-mix(in srgb, var(--brand-ink) 10%, transparent);
+  --glass-tint-warm: color-mix(in srgb, var(--brand-clay) 7%, transparent);
+  --glass-tint-cool: color-mix(in srgb, var(--brand-pine) 6%, transparent);
+  background-color: color-mix(in srgb, var(--brand-cream) 78%, transparent);
+  background-image:
+    linear-gradient(to bottom, var(--glass-sheen), transparent 28%),
+    linear-gradient(to bottom, var(--glass-edge-top), transparent 1.5px),
+    linear-gradient(to top, var(--glass-edge-bottom), transparent 1px),
+    linear-gradient(
+      115deg,
+      var(--glass-tint-warm),
+      transparent 42%,
+      transparent 58%,
+      var(--glass-tint-cool)
+    );
+  -webkit-backdrop-filter: var(--glass-backdrop);
+  backdrop-filter: var(--glass-backdrop);
+  border: 1px solid color-mix(in srgb, var(--brand-ink) 8%, transparent);
+}
+
+.dark .glass-tier2,
+html.palette-vivid .glass-tier2,
+.hero-overlay .glass-tier2 {
+  --glass-backdrop: blur(16px) saturate(150%);
+  --glass-sheen: rgb(255 255 255 / 0.05);
+  --glass-edge-top: rgb(255 255 255 / 0.14);
+  --glass-edge-bottom: rgb(255 255 255 / 0.06);
+  --glass-tint-warm: color-mix(in srgb, var(--brand-clay) 9%, transparent);
+  --glass-tint-cool: color-mix(in srgb, var(--brand-pine) 8%, transparent);
+  background-color: color-mix(in srgb, var(--brand-cream) 72%, transparent);
+  border-color: color-mix(in srgb, var(--brand-ink) 12%, transparent);
+}
+
+/*
+ * 卡片浮起微交互：hover 轻微上浮 + 投影逐层加深 + 边缘晕染一层低透明
+ * 主题强调色描边，一卡一事、干净精致。只声明端态，过渡曲线/时长由元素
+ * 自带的 transition-* 工具类驱动，避免与 Tailwind transition 声明因
+ * 层叠顺序互相覆盖。
+ */
+.card-lift:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--brand-clay) 32%, transparent);
+  box-shadow: var(--elev-3);
+}
+
+.dark .card-lift:hover {
+  /* 仅描边浓度比浅色深一档；投影由 --elev-3 随主题自动换档 */
+  border-color: color-mix(in srgb, var(--brand-clay) 38%, transparent);
+}
+
+/*
+ * 按下态压过 hover 浮起（同为 0,2,0 特异度、按源序后者胜）：
+ * 指针 :active 与键盘 data-kb-press 镜像（见 src/lib/press.ts）统一微下沉。
+ */
+.card-lift:active,
+.card-lift[data-kb-press='true'] {
+  transform: translateY(-1px) scale(0.99);
+  box-shadow: var(--elev-press);
+}
+
+/* 降级契约（§13.4）：兼容模式与减少动效下不做位移，仅保留投影变化 */
+.mode-compat .card-lift:hover {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-lift:hover {
+    transform: none;
+  }
+}
+
+/* 浏览器完全不支持 backdrop-filter 时退化为纯色，避免文字糊在背景上 */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-tier2 {
+    background-color: var(--brand-cream);
+    background-image: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/*
+ * 悬浮玻璃控件（2 级玻璃 + 顶部内高光 + 投影）：
+ * 回顶按钮、灯箱控制条、空状态卡共用。顶部内高光模拟玻璃上缘受光
+ * （明暗主题浓度各一档，经 --glass-highlight 局部变量切换），
+ * 投影部分引用高程令牌（--elev-2 静置 / --elev-3 悬停加深）——
+ * .glass-tier2 与 .glass-float 各管互不重叠的属性，避免同元素上
+ * Tailwind shadow 工具类被层叠吞掉。
+ */
+.glass-float {
+  --glass-highlight: color-mix(in srgb, var(--brand-cream) 55%, transparent);
+  box-shadow:
+    inset 0 1px 0 0 var(--glass-highlight),
+    var(--elev-2);
+}
+
+.dark .glass-float,
+html.palette-vivid .glass-float,
+.hero-overlay .glass-float {
+  --glass-highlight: color-mix(in srgb, var(--brand-cream) 18%, transparent);
+}
+
+.glass-float:hover {
+  box-shadow:
+    inset 0 1px 0 0 var(--glass-highlight),
+    var(--elev-3);
+}
+
+/*
+ * liquid-glass-react 会在内容容器之外额外渲染 4 个装饰层兄弟节点。
+ * 这些层的定位取自传入的 style，默认会退化为 position: relative 并挤占文档流，
+ * 导致内容被向下顶开。这里统一强制归位到内容容器之上。
+ * 配套逻辑见 src/components/glass/GlassSurface.tsx。
+ */
+.glass-host > *:not(.glass-container) {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+}
+
+/*
+ * 点触光感（配合 src/lib/press.ts 的 data-glow + --glow-x/--glow-y 落点）：
+ * 指针/键盘按压位置的一次性光效涟漪。position: relative 必须放在
+ * components 层——utilities 层的定位工具类（如 Dialog 关闭钮的 absolute）
+ * 能无条件覆盖它，而默认情况下保证 ::after 有定位锚点。
+ * 仅 full 动效档由 JS 挂 data-glow；compat 与 prefers-reduced-motion
+ * 在文件末尾的降级区段另有 animation: none 双保险。
+ */
+@layer components {
+  .press-glow {
+    /* 落点默认取中心（键盘按压没有指针坐标） */
+    --glow-x: 50%;
+    --glow-y: 50%;
+    position: relative;
+  }
+}
+
+.press-glow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    radial-gradient(circle at var(--glow-x) var(--glow-y), var(--press-glow-core), transparent 45%),
+    radial-gradient(circle at var(--glow-x) var(--glow-y), var(--press-glow-halo), transparent 72%);
+  transform-origin: var(--glow-x) var(--glow-y);
+}
+
+.press-glow[data-glow]::after {
+  animation: press-glow 450ms var(--motion-enter) forwards;
+}
+
+@keyframes press-glow {
+  0% {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+}
+
+/*
+ * 首屏极光背景：纯代码生成，不含任何图片资源。
+ * 色斑颜色由顶部 :root 与 html.palette-* 定义；
+ * 这里保留光斑/光感的通用取色，光斑取色随主题分档。
+ */
+:root {
+  /*
+   * 鼠标光斑取色（SpotlightCanvas 运行时逐帧读取，canvas 绘制无法直接引用
+   * CSS 变量颜色）。浅色 Hero 为页面底色：核心取品牌蓝（vitality-1）、
+   * 中段取粉（vitality-3），在浅底上形成柔和色晕；
+   * 暗色黑底舞台见下方 .dark 覆盖（核心白、中段亮蓝）。
+   * 三值均为空格分隔的 RGB 通道。
+   */
+  --spotlight-core-rgb: 57 143 254;
+  --spotlight-core-alpha: 0.12;
+  --spotlight-mid-rgb: 230 82 159;
+  --spotlight-mid-alpha: 0.08;
+
+  /*
+   * 点触光感取色（.press-glow 运行时引用）：核心为白光，外晕取主题强调色
+   * （color-mix 随 --brand-clay 自动换主题色，暗色无需单独覆盖浓度）。
+   */
+  --press-glow-core: rgb(255 255 255 / 0.55);
+  --press-glow-halo: color-mix(in srgb, var(--brand-clay) 22%, transparent);
+}
+
+/* 暗色黑底舞台的光斑取色（与旧版逐字一致） */
+.dark {
+  --spotlight-core-rgb: 255 255 255;
+  --spotlight-core-alpha: 0.14;
+  --spotlight-mid-rgb: 57 143 254;
+  --spotlight-mid-alpha: 0.1;
+  --press-glow-core: rgb(255 255 255 / 0.22);
+}
+
+.aurora-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(48px);
+  will-change: transform;
+}
+
+.aurora-blob-1 {
+  width: clamp(360px, 62vw, 980px);
+  height: clamp(360px, 62vw, 980px);
+  top: -22%;
+  left: -14%;
+  background: radial-gradient(closest-side, var(--aurora-c1), transparent 72%);
+  animation: aurora-drift-1 36s ease-in-out infinite;
+}
+
+.aurora-blob-2 {
+  width: clamp(380px, 68vw, 1040px);
+  height: clamp(380px, 68vw, 1040px);
+  right: -18%;
+  bottom: -26%;
+  background: radial-gradient(closest-side, var(--aurora-c2), transparent 72%);
+  animation: aurora-drift-2 44s ease-in-out infinite;
+}
+
+.aurora-blob-3 {
+  width: clamp(300px, 46vw, 720px);
+  height: clamp(300px, 46vw, 720px);
+  top: 14%;
+  right: 12%;
+  background: radial-gradient(closest-side, var(--aurora-c3), transparent 72%);
+  animation: aurora-drift-3 52s ease-in-out infinite;
+}
+
+.aurora-blob-4 {
+  width: clamp(320px, 52vw, 800px);
+  height: clamp(320px, 52vw, 800px);
+  bottom: -8%;
+  left: 10%;
+  background: radial-gradient(closest-side, var(--aurora-c4), transparent 72%);
+  animation: aurora-drift-4 60s ease-in-out infinite;
+}
+
+/* 四个色斑各按自己的周期与方向缓慢漂移，叠加出类似极光的流动感 */
+@keyframes aurora-drift-1 {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(7vw, 5vh, 0) scale(1.15);
+  }
+}
+
+@keyframes aurora-drift-2 {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1.05);
+  }
+  50% {
+    transform: translate3d(-6vw, -6vh, 0) scale(0.95);
+  }
+}
+
+@keyframes aurora-drift-3 {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-8vw, 6vh, 0) scale(1.12);
+  }
+}
+
+@keyframes aurora-drift-4 {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1.08);
+  }
+  50% {
+    transform: translate3d(5vw, -7vh, 0) scale(0.94);
+  }
+}
+
+/*
+ * 颗粒噪点：去饱和的 SVG feTurbulence 平铺（Stripe 风格），
+ * 抑制大面积渐变过渡处的色带。
+ */
+.aurora-grain {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+  opacity: var(--aurora-grain-opacity);
+  pointer-events: none;
+}
+
+/*
+ * 漂浮几何体（2026-10-02 氛围层升级）：极细描边圆环与小光点，
+ * 描边 1px、透明度 ≤ 0.16，为首屏增加结构化的「漂浮几何」层次，
+ * 与极光的色彩晕染互补。仅 transform 动画；置于内容之下（Hero 的
+ * -z-10 背景层内）、pointer-events-none，不抢前景焦点。
+ * mode-compat 与 prefers-reduced-motion 下静止（见下方降级区段）。
+ */
+:root {
+  /* 描边取墨色：浅底上为深色细环（原白色环在浅底不可见）；
+     暗色下 --ink 为白，且黑底舞台由 .dark .hero-stage 的原值覆盖 */
+  --shape-ring: color-mix(in oklab, var(--ink) 16%, transparent);
+  --shape-ring-alt: color-mix(in oklab, var(--vitality-2) 30%, transparent);
+  --shape-dot: color-mix(in oklab, var(--vitality-3) 50%, transparent);
+}
+
+.float-shape {
+  position: absolute;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.float-ring {
+  border-radius: 9999px;
+  border: 1px solid var(--shape-ring);
+}
+
+.float-ring-alt {
+  border-color: var(--shape-ring-alt);
+}
+
+.float-dot {
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, var(--shape-dot), transparent 70%);
+}
+
+.float-shape-1 {
+  width: clamp(280px, 34vw, 520px);
+  aspect-ratio: 1;
+  top: 8%;
+  left: 6%;
+  animation: float-drift-1 28s ease-in-out infinite;
+}
+
+.float-shape-2 {
+  width: clamp(180px, 22vw, 360px);
+  aspect-ratio: 1;
+  top: 55%;
+  right: 8%;
+  animation: float-drift-2 36s ease-in-out infinite;
+}
+
+.float-shape-3 {
+  width: 10px;
+  height: 10px;
+  top: 22%;
+  right: 22%;
+  animation: float-drift-3 22s ease-in-out infinite;
+}
+
+.float-shape-4 {
+  width: 6px;
+  height: 6px;
+  top: 68%;
+  left: 18%;
+  animation: float-drift-2 30s ease-in-out infinite reverse;
+}
+
+/* 几何体各按不同周期与方向缓慢漂浮，与极光漂移节奏错开 */
+@keyframes float-drift-1 {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(3vw, 4vh, 0);
+  }
+}
+
+@keyframes float-drift-2 {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-2.5vw, -3vh, 0);
+  }
+}
+
+@keyframes float-drift-3 {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-4vw, 6vh, 0);
+  }
+}
+
+/*
+ * 兼容模式（§4.3 / §13.4）：mode-compat 类由调度器挂在 <html> 上。
+ * 只裁动效——极光色斑与漂浮几何静止、入场动画退化为纯 opacity
+ * （组件内 JS 处理）、玻璃切简档（GlassSurface props 处理）；
+ * 字体与图片渲染保持完整（§4.5）。
+ */
+.mode-compat .aurora-blob,
+.mode-compat .float-shape {
+  animation: none;
+}
+
+/*
+ * 骨架屏脉冲同属动效（§13.4 降级契约）：兼容模式与减少动效偏好下停用，
+ * 保留静态占位块的明度差异，占位功能不受影响。
+ */
+.mode-compat .animate-pulse {
+  animation: none;
+}
+
+/*
+ * 点触光感同属动效（§13.4 降级契约）：JS 侧不挂 data-glow，这里再兜底停用。
+ * 选择器须带 [data-glow]（特异度 0,2,0）才能压过动画触发规则
+ * .press-glow[data-glow]::after 的 animation 简写，否则降级失效。
+ */
+.mode-compat .press-glow[data-glow]::after {
+  animation: none;
+}
+
+/* 作品图 hover 缩放同属动效：兼容模式与减少动效下保持静止 */
+.mode-compat [data-slot='photo-fade'] img {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .aurora-blob,
+  .float-shape {
+    animation: none;
+  }
+
+  .animate-pulse {
+    animation: none;
+  }
+
+  .press-glow[data-glow]::after {
+    animation: none;
+  }
+
+  [data-slot='photo-fade'] img {
+    transform: none;
+  }
+}
+
+/*
+ * ═══════════════════════════════════════════════════════════════
+ * 全设备响应式适配层（2026-09-28）
+ *
+ * 断点体系：手机 <768px ｜ 平板 768–1023px ｜ 桌面 1024–1439px（基线）
+ *           ｜ 大屏/电视 ≥1440px
+ * 组件级宽度断点由各 TSX 中的 Tailwind 前缀类承担（sm:/md:/lg:，
+ * 与 768/1024 天然对齐），本层只做全局兜底与跨断点阶梯调整，
+ * 不改动任何 DOM 结构与业务逻辑。桌面基线（1024–1439px）零改动。
+ * 本区段为未分层普通 CSS，层叠优先级高于 @layer 内的 Tailwind
+ * 工具类，可安全兜底；整段删除即完全回滚。
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+/* [全局/全断点] 防异常横向滚动兜底：overflow-x: clip 裁掉意外超界内容
+ * 但不生成滚动容器（区别于 hidden），不会破坏 fixed header 内的
+ * sticky 定位、平滑滚动与 position: sticky 页内目录 */
+html,
+body {
+  overflow-x: clip;
+}
+
+/* [手机 <768px] 输入类控件字号统一 16px：规避 iOS Safari 对字号
+ * 小于 16px 的输入框聚焦时强制放大页面的行为；user-scalable=yes
+ * 保留手动缩放能力。项目当前无原生表单时该规则无副作用 */
+@media (max-width: 767.98px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
+
+/* [大屏/电视 ≥1440px] 根字号 16→17px：Tailwind v4 的字号、间距、
+ * 容器宽（max-w-6xl = 72rem 等）全部以 rem 计，等比放大约 6%，
+ * 布局比例与视觉风格不变，远距离观看可读性提升，同时缓解
+ * 1152px 内容在 1440px+ 屏幕居中后的空旷感 */
+@media (min-width: 1440px) {
+  html {
+    font-size: 17px;
+  }
+}
+
+/* [电视/2K+ ≥1920px] 根字号再放大至 18px（累计约 12%），适配
+ * 智能电视与远距离观看场景；px 定义的圆角、装饰模糊半径不受影响 */
+@media (min-width: 1920px) {
+  html {
+    font-size: 18px;
+  }
+}
+
+/*
+ * [触控端 <1024px] 交互热区补足到 44×44：手机与平板均为触控优先
+ * 设备，此处只扩大命中区域（min-height/min-width），图标与文字的
+ * 视觉尺寸不变；桌面 ≥1024px 保持鼠标交互原样，不受影响。
+ * - header button：logo、主题/设置/菜单图标钮（36→44）、平板端
+ *   桌面导航项（36→44）与抽屉导航项（40→44）；
+ * - [data-slot='button']：全站 Button 组件（胶囊形），CTA 按钮 40→44
+ *   （卡片网格等比增高，肉眼几乎不可感知）；
+ * - footer 链接：社交图标钮（36→44）与联系药丸（40→44）。
+ * - .code-copy-btn：详情页代码块复制钮（16→44，原高度低于 WCAG
+ *   2.5.8 AA 的 24px 下限），仅移动端撑高代码条。
+ * 详情页移动端标签药丸（rounded-full、约 30px 高）为保风格不拉伸，
+ * 满足 WCAG 2.5.8 AA（24px），且位于可横滑容器内，豁免 44 目标。
+ */
+@media (max-width: 1023.98px) {
+  header button,
+  footer a,
+  footer button,
+  .code-copy-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  [data-slot='button'],
+  .rounded-btn {
+    min-height: 44px;
+  }
+}

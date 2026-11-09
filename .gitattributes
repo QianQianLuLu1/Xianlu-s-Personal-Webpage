@@ -1,0 +1,4 @@
+# 换行策略：工作区 core.autocrlf=true，会把 LF 在检出时改写成 CRLF。
+# pre-commit 由 Git 自带的 sh 执行，必须保持 LF，否则 shebang/语法会被 \r 破坏。
+# 防御性规则：该钩子为本地文件，可能未纳入版本控制；保留以便恢复时仍按 LF 检出。
+hooks/pre-commit text eol=lf

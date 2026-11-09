@@ -1,0 +1,905 @@
+/**
+ * 开源项目详情页内容（二级页面 /projects/:projectId）。
+ *
+ * 数据分层：
+ * - **客观字段**（名称 / 仓库地址 / 版本 / 语言 / 许可证 / Release）由
+ *   scripts/sync-github-projects.mjs 从 GitHub REST API 联网生成，见 data/projects.generated.ts。
+ * - **本文件**只承载编辑性内容：叙述文案、命令、参数表、章节结构。
+ *
+ * 内容来源：GitHub 公开仓库 README（2026-11-06 逐字核对）：
+ * - https://github.com/QianQianLuLu1/MeowStarMap（原 NikkiGallery，已改名；README 徽章 2.5.6）
+ * - https://github.com/QianQianLuLu1/FlashGaze（README 徽章 0.1.2，无 Release）
+ *
+ * 仓库改名说明：路由 id 仍为 `nikki-gallery`（URL 稳定），展示名取自同步数据。
+ * 叙述性文案按站内语境重写；命令、参数、表格与技术事实与 README 保持一致。
+ * 涉及密钥的配置示例只保留变量名与占位说明，不内联任何密钥字面量。
+ * star 数按既有决策不展示。
+ */
+
+export type ProjectId = 'flashgaze' | 'nikki-gallery';
+
+/** 渲染器图标映射表的键（见 components/project/detail-blocks.tsx） */
+export type DetailIcon =
+  | 'scan'
+  | 'gallery'
+  | 'edit'
+  | 'video'
+  | 'organize'
+  | 'dedup'
+  | 'share'
+  | 'languages'
+  | 'theme'
+  | 'plugins'
+  | 'profile'
+  | 'decrypt'
+  | 'diagnose'
+  | 'gauge'
+  | 'explain'
+  | 'scene'
+  | 'providers'
+  | 'agent'
+  | 'offline'
+  | 'degrade'
+  | 'mcp';
+
+export interface DetailFeature {
+  icon: DetailIcon;
+  title: string;
+  description: string;
+}
+
+export interface DetailFlowNode {
+  title: string;
+  lines: readonly string[];
+}
+
+export interface DetailLink {
+  label: string;
+  href: string;
+  description?: string;
+}
+
+export type DetailBlock =
+  | { type: 'paragraph'; text: string }
+  | { type: 'features'; items: readonly DetailFeature[] }
+  | { type: 'flow'; nodes: readonly DetailFlowNode[]; note?: string }
+  | { type: 'steps'; items: readonly { title: string; text?: string }[] }
+  | { type: 'code'; language?: string; code: string }
+  | { type: 'table'; headers: readonly string[]; rows: readonly (readonly string[])[] }
+  | { type: 'callout'; variant: 'info' | 'warn'; title?: string; text: string }
+  | { type: 'links'; items: readonly DetailLink[] };
+
+export interface ProjectSection {
+  /** 锚点 id，同时用于页内目录与 URL hash */
+  id: string;
+  title: string;
+  blocks: readonly DetailBlock[];
+}
+
+export interface ProjectDetail {
+  /** Hero 区一句话定位（比 summary 更短） */
+  tagline: string;
+  /** Releases 页地址；无 Release 的项目为 null */
+  releaseUrl: string | null;
+  sections: readonly ProjectSection[];
+}
+
+export function isProjectId(value: string | undefined): value is ProjectId {
+  return value === 'flashgaze' || value === 'nikki-gallery';
+}
+
+export const PROJECT_DETAILS: Record<ProjectId, ProjectDetail> = {
+  flashgaze: {
+    tagline:
+      'AI 辅助的本地图像评分 CLI — CV 客观指标打底，视觉大模型按需补偿，为 AI Agent 的稳定调用而设计',
+    releaseUrl: null,
+    sections: [
+      {
+        id: 'overview',
+        title: '项目简介',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: '从几百张照片里挑出最好的几十张，费时又主观。FlashGaze（瞬选灵眸）把这件事自动化：CV 引擎在本机客观测量清晰度与曝光度，可选的视觉大模型层判断模糊或偏暗究竟是艺术手法（背景虚化、逆光剪影、暗调氛围）还是技术失误，最终输出一份排好序、带理由的结构化报告，可以直接接入任何工作流。',
+          },
+          {
+            type: 'paragraph',
+            text: '它以命令行为主形态：stdout 输出干净 JSON、stderr 输出日志、标准返回码，天生适合被 AI Agent 经 subprocess 稳定调用；同时也提供基于 Gradio 的浏览器图形界面与内置 MCP Server——摄影师、开发者和 AI 助手，都能找到顺手的使用方式。',
+          },
+          {
+            type: 'callout',
+            variant: 'info',
+            title: '零成本模式',
+            text: '加上 --no-vlm 即完全离线运行：无需 API Key、不发送任何数据，同一张图片连续跑 10 次分数完全一致（10/10 可复现已验证）。',
+          },
+        ],
+      },
+      {
+        id: 'how',
+        title: '工作原理',
+        blocks: [
+          {
+            type: 'flow',
+            nodes: [
+              { title: '图片目录', lines: ['JPG · PNG · WebP'] },
+              { title: 'CVEngine', lines: ['清晰度 · 曝光度', '构图（实验性）'] },
+              { title: 'HybridScorer', lines: ['CV 加权分 + VLM ±补偿', '＝ 最终分 0–100'] },
+              {
+                title: 'Exporter',
+                lines: ['复制 / 移动精选', 'JSON / CSV 清单', 'vlm_reason · vlm_provider'],
+              },
+            ],
+            note: '支线：VLMClient（可选）接入 HybridScorer，支持 Qwen-VL / GPT-4o / Claude 3 / Ollama 四类提供商。',
+          },
+          {
+            type: 'table',
+            headers: ['维度', '方法', '范围', '默认'],
+            rows: [
+              ['清晰度', '拉普拉斯方差，线性映射，上限 500 封顶', '0–100', '开'],
+              ['曝光度', '直方图中间调占比（惩罚极端暗 / 亮像素）', '0–100', '开'],
+              ['构图', '三分法 + Otsu 前景质心（实验性）', '0–100', '关（--enable-composition）'],
+              [
+                '噪点',
+                'BRISQUE 无参考质量评估（需 opencv-contrib-python）',
+                '0–100',
+                '关（--enable-noise）',
+              ],
+              ['色彩', 'HSV 直方图熵 + 饱和度均值', '0–100', '关（--enable-color）'],
+              [
+                '人像',
+                '人脸数 + 人脸区域清晰度加分（需 face_recognition）',
+                '+3~5 加分',
+                '关（--enable-portrait）',
+              ],
+              [
+                '去重',
+                'PHash 感知哈希，相似组仅保留最高分（需 imagededup）',
+                '仅标记',
+                '关（--enable-dedup）',
+              ],
+            ],
+          },
+          {
+            type: 'paragraph',
+            text: '默认权重为清晰度 50% + 曝光度 50%；启用可选维度而未手动指定 --weights 时，会自动注入一组合理默认权重（如全启用 → 清晰度 0.35 / 曝光 0.25 / 构图 0.20 / 噪点 0.10 / 色彩 0.10），也可用 --weights 完全自定义。',
+          },
+          {
+            type: 'callout',
+            variant: 'info',
+            title: 'VLM 补偿机制',
+            text: 'VLM 同时收到图片与 CV 指标，判断模糊、偏暗是创作意图还是拍摄失误，返回一个限制在 ±10 分以内的有符号补偿值，叠加到 CV 加权分后 clamp 到 0–100。补偿不为零时，输出必附 ≤20 字理由（vlm_reason）与提供商标识（vlm_provider），每一分都有出处。',
+          },
+        ],
+      },
+      {
+        id: 'features',
+        title: '核心特性',
+        blocks: [
+          {
+            type: 'features',
+            items: [
+              {
+                icon: 'gauge',
+                title: '混合评分引擎',
+                description:
+                  'CV 客观分（拉普拉斯方差 + 直方图曝光）打底并主导分数，VLM 场景补偿封顶 ±10 分——审美有话语权，但不翻盘。',
+              },
+              {
+                icon: 'explain',
+                title: '评分可解释',
+                description:
+                  '每次 VLM 补偿附带 ≤20 字中文理由与提供商标识，写进 JSON / CSV 输出，每 1 分都追溯得到。',
+              },
+              {
+                icon: 'scene',
+                title: '场景化评分',
+                description:
+                  '--scene 在 auto / portrait / landscape / still_life 四类场景间切换差异化提示词，让补偿贴合题材。',
+              },
+              {
+                icon: 'providers',
+                title: '多 VLM 服务商',
+                description:
+                  '默认通义千问 Qwen-VL，零新增依赖；GPT-4o、Claude 3、Ollama 经 LiteLLM 统一接入，无厂商专属适配代码。',
+              },
+              {
+                icon: 'agent',
+                title: 'Agent 友好',
+                description:
+                  'stdout 纯 JSON、stderr 日志、标准返回码，subprocess 拿到输出即可 json.loads，批处理稳定不惊扰调用方。',
+              },
+              {
+                icon: 'offline',
+                title: '零成本离线',
+                description: '--no-vlm 模式完全不联网、无需 API Key，适合批量初筛与隐私敏感场景。',
+              },
+              {
+                icon: 'degrade',
+                title: '优雅降级',
+                description:
+                  '坏图返回 score=0 并附 error 字段，VLM 失败自动回退纯 CV，任何单点故障都不中断批处理。',
+              },
+              {
+                icon: 'mcp',
+                title: '内置 MCP Server',
+                description:
+                  '安装 [mcp] extra 后，AI 工具加一段配置即可直接调用评分、筛选、导出与工作空间清理。',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'install',
+        title: '安装',
+        blocks: [
+          {
+            type: 'steps',
+            items: [
+              { title: '克隆仓库并本地安装', text: '要求 Python 3.10+。' },
+              {
+                title: '按需加装可选能力',
+                text: '可选能力默认全部关闭、按需安装；依赖缺失时自动降级，不报错。',
+              },
+              { title: '确认安装成功', text: '运行 flashgaze --version 查看版本号。' },
+            ],
+          },
+          {
+            type: 'code',
+            language: 'bash',
+            code: 'git clone https://github.com/QianQianLuLu1/FlashGaze.git\ncd FlashGaze/flashgaze\npip install -e .',
+          },
+          {
+            type: 'code',
+            language: 'bash',
+            code: 'pip install -e ".[mcp]"        # MCP Server（Claude Code / TRAE / Cursor / Codex）\npip install -e ".[gui]"        # Web GUI（Gradio），安装后运行 flashgaze-webui\npip install -e ".[vlm-multi]"  # 多 VLM 提供商（LiteLLM：GPT-4o / Claude 3 / Ollama）\npip install -e ".[cv-enhanced]" # BRISQUE 噪点评分（opencv-contrib-python）\npip install -e ".[portrait]"    # 人像评分（face_recognition）\npip install -e ".[dedup]"       # PHash 去重（imagededup）\npip install -e ".[exif]"        # EXIF 写回（piexif）\npip install -e ".[xlsx]"        # Excel 清单导出（openpyxl）\npip install -e ".[all]"         # 一次性安装以上全部\n# 插件系统为内置功能，无需 extra，运行时加 --enable-plugins 即可',
+          },
+          {
+            type: 'table',
+            headers: ['Extra', '启用方式', '新增能力'],
+            rows: [
+              ['mcp', '安装后即内置', '面向 AI 工具的 MCP Server'],
+              ['cv-enhanced', '--enable-noise', 'BRISQUE 噪点评分'],
+              ['portrait', '--enable-portrait', '人脸人像加分（+3~5）'],
+              ['dedup', '--enable-dedup', 'PHash 感知哈希去重'],
+              ['vlm-multi', '--vlm-provider 非 qwen', 'GPT-4o / Claude 3 / Ollama'],
+              ['gui', 'flashgaze-webui 启动', 'Gradio 浏览器图形界面'],
+              ['exif', '--exif（--no-exif-backup 跳过备份）', '评分写回 EXIF（仅 JPEG/TIFF）'],
+              ['xlsx', '--xlsx（--xlsx-output 改路径）', '生成 .xlsx 评分表'],
+              ['插件（内置）', '--enable-plugins（--plugin-dir）', '可发现式插件评分阶段'],
+              ['all', '—', '以上全部一次性安装'],
+            ],
+          },
+          {
+            type: 'callout',
+            variant: 'info',
+            text: '默认提供商 qwen 不需要 LiteLLM；可选依赖未装齐不会报错，对应维度返回 null / 0 / false 后批处理继续。',
+          },
+        ],
+      },
+      {
+        id: 'quickstart',
+        title: '快速开始',
+        blocks: [
+          {
+            type: 'code',
+            language: 'bash',
+            code: '# 零成本快速初筛（仅 CV，无需 API Key）\nflashgaze ./photos --top 30 --json --no-vlm\n\n# VLM 精筛（需先设置环境变量 FLASHGAZE_API_KEY 为你的密钥）\nflashgaze ./photos --top 30 --json\n\n# 评分并复制高分图到新目录\nflashgaze ./photos --top 30 --json --export\n\n# 阈值模式（分数 >= 75 入选）\nflashgaze ./photos --threshold 75 --json --csv',
+          },
+          {
+            type: 'paragraph',
+            text: 'JSON 报告包含 summary 汇总（总数、入选数、平均分、耗时）与逐图指标；selected 字段标记入选结果，可直接驱动后续导出与自动化流程。',
+          },
+          {
+            type: 'code',
+            language: 'json',
+            code: `{
+  "status": "success",
+  "code": 0,
+  "summary": { "total": 120, "selected": 30, "avg_score": 68.45, "elapsed_ms": 15420 },
+  "images": [
+    {
+      "file": "DSC_0042.jpg",
+      "path": "/photos/DSC_0042.jpg",
+      "sharpness": 92.5,
+      "exposure": 88.0,
+      "composition": null,
+      "vlm_adjustment": 5.0,
+      "score": 92.75,
+      "selected": true,
+      "error": null,
+      "vlm_reason": "背景虚化突出主体",
+      "vlm_provider": "qwen"
+    }
+  ]
+}`,
+          },
+        ],
+      },
+      {
+        id: 'cli',
+        title: 'CLI 选项',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: '传入图片目录或文件路径后接选项即可，常用参数与仓库 README 同步：',
+          },
+          {
+            type: 'table',
+            headers: ['选项', '说明'],
+            rows: [
+              ['--top N', '选取前 N 张高分图（默认 30）'],
+              ['--threshold SCORE', '分数阈值（替代 --top）'],
+              ['--export', '复制高分图至导出目录'],
+              ['--export-dir PATH', '导出目标目录（默认 ./精选）'],
+              ['--move', '移动而非复制（需配合 --export）'],
+              ['--json', '输出 JSON 清单到 stdout'],
+              ['--csv', '输出 CSV 清单'],
+              ['--output PATH', 'JSON 清单输出到文件'],
+              ['--csv-output PATH', 'CSV 清单输出路径（默认 flashgaze_result.csv）'],
+              ['--exif', '将最终评分写回图片 EXIF 元数据（仅 JPEG/TIFF）'],
+              ['--no-exif-backup', '写 EXIF 时不创建 .flashgaze_backup 原文件备份'],
+              ['--xlsx', '额外生成 .xlsx 评分表'],
+              ['--xlsx-output PATH', '.xlsx 输出路径（默认 flashgaze_result.xlsx）'],
+              ['--enable-plugins', '启用插件评分阶段（自动发现内置与用户插件目录）'],
+              ['--plugin-dir PATH', '额外插件目录，与内置及用户目录合并发现'],
+              ['--no-vlm', '禁用 VLM，仅用 CV（零 API 成本）'],
+              ['--vlm-provider 提供商', 'qwen（默认）/ openai / anthropic / ollama'],
+              ['--scene 场景', 'auto（默认）/ portrait / landscape / still_life'],
+              ['--enable-composition', '启用构图评分（实验性）'],
+              ['--enable-noise', '启用 BRISQUE 噪点评分（需模型文件）'],
+              ['--enable-color', '启用色彩丰富度评分'],
+              ['--enable-portrait', '启用人像专项评分（+3~5 加分）'],
+              ['--enable-dedup', '启用 PHash 去重（相似图保留最高分）'],
+              ['--dedup-threshold N', 'PHash 汉明距离阈值（默认 8，越小越严格）'],
+              ['--weights JSON', '自定义维度权重，可选 key：composition / noise / color'],
+              ['--workers N', '并发线程数（默认 4）'],
+              ['--config-file PATH', 'JSON 配置文件路径'],
+              ['--verbose', '详细日志（stderr）'],
+              ['--no-downscale', '禁用大图降采样（默认长边超 2048px 时降采样省内存）'],
+              ['--api-key KEY', 'VLM API Key（覆盖环境变量）'],
+              ['--api-base URL', 'VLM 端点（覆盖环境变量）'],
+              ['--model NAME', 'VLM 模型名称（覆盖环境变量）'],
+              ['--version', '显示版本号并退出'],
+            ],
+          },
+        ],
+      },
+      {
+        id: 'vlm',
+        title: 'VLM 服务商',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: '四类提供商经统一调用层接入，无厂商专属适配代码：qwen（默认）走原生 requests 路径、零新增依赖；其余三家经 LiteLLM 统一层。所有提供商都通过环境变量 FLASHGAZE_API_KEY 提供密钥（Ollama 无需真实密钥，填任意非空值即可）。',
+          },
+          {
+            type: 'table',
+            headers: ['提供商', '模型示例', 'API 端点', '需要 LiteLLM'],
+            rows: [
+              ['qwen（默认）', 'qwen-vl-max', 'dashscope compatible-mode 端点', '否'],
+              ['openai', 'gpt-4o', 'https://api.openai.com/v1', '是'],
+              ['anthropic', 'claude-3-5-sonnet-20241022', '留空走 LiteLLM 默认端点', '是'],
+              ['ollama', 'llama3.2-vision', 'http://localhost:11434', '是'],
+            ],
+          },
+          {
+            type: 'code',
+            language: 'bash',
+            code: '# 先在终端把环境变量 FLASHGAZE_API_KEY 设置为对应提供商的密钥，再按需选择：\n\n# 1. 通义千问（默认，100% 向后兼容——无需 LiteLLM）\nexport FLASHGAZE_VLM_PROVIDER=qwen\nexport FLASHGAZE_API_BASE=https://dashscope.aliyuncs.com/compatible-mode/v1\nexport FLASHGAZE_MODEL=qwen-vl-max\n\n# 2. OpenAI GPT-4o（需安装 LiteLLM）\nexport FLASHGAZE_VLM_PROVIDER=openai\nexport FLASHGAZE_API_BASE=https://api.openai.com/v1\nexport FLASHGAZE_MODEL=gpt-4o\n\n# 3. Anthropic Claude 3（api_base 留空走 LiteLLM 默认端点）\nexport FLASHGAZE_VLM_PROVIDER=anthropic\nexport FLASHGAZE_MODEL=claude-3-5-sonnet-20241022\n\n# 4. Ollama 本地 VLM（无需真实 key）\nexport FLASHGAZE_VLM_PROVIDER=ollama\nexport FLASHGAZE_API_BASE=http://localhost:11434\nexport FLASHGAZE_MODEL=llama3.2-vision',
+          },
+          {
+            type: 'callout',
+            variant: 'warn',
+            title: '优雅降级',
+            text: '未安装 LiteLLM 而选择了非 qwen 提供商时，VLM 调用返回 litellm_not_installed 错误并自动回退纯 CV 模式，批处理照常完成；非法 provider / scene 取值回退默认值并记 warning。',
+          },
+        ],
+      },
+      {
+        id: 'scene',
+        title: '场景化评分',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: '--scene 切换 VLM 提示词，让补偿聚焦不同题材的艺术手法；auto（默认）由 VLM 自行判断场景，与原版单一提示词语义一致。',
+          },
+          {
+            type: 'table',
+            headers: ['场景', '适用', '提示词侧重点'],
+            rows: [
+              ['auto（默认）', '混合目录、内容未知', 'VLM 自行判断场景'],
+              ['portrait', '人像 / 头像 / 街拍人像', '背景虚化作为艺术手法；人脸区域清晰度'],
+              ['landscape', '风光 / 自然 / 建筑', '长曝光流水与云层；剪影；暗调氛围'],
+              ['still_life', '产品 / 美食 / 静物摆拍', '景深控制；布光氛围；暗调质感'],
+            ],
+          },
+          {
+            type: 'code',
+            language: 'bash',
+            code: '# 用场景化提示词评分人像目录\nflashgaze ./portraits --scene portrait --top 20 --json\n\n# 评分风光目录\nflashgaze ./landscapes --scene landscape --top 30 --json',
+          },
+        ],
+      },
+      {
+        id: 'mcp',
+        title: 'MCP Server',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: '安装 [mcp] extra 后，把下面一段配置加进 AI 工具的 MCP 设置，助手就能直接驱动 FlashGaze 的全部能力：',
+          },
+          {
+            type: 'code',
+            language: 'json',
+            code: `{
+  "mcpServers": {
+    "flashgaze": {
+      "command": "python",
+      "args": ["-m", "flashgaze.mcp_server"]
+    }
+  }
+}`,
+          },
+          {
+            type: 'table',
+            headers: ['工具', '功能'],
+            rows: [
+              ['score_images', '对目录下所有图片批量评分'],
+              ['score_single_image', '评分单张图片，返回详细指标'],
+              ['score_uploaded_images', '对指定路径列表的图片评分（不依赖目录结构）'],
+              ['export_selected_images', '评分后复制 / 移动高分图到目标目录'],
+              ['cleanup_workspace_images', '评分后原地删除低分图（含 dry_run 安全模式）'],
+            ],
+          },
+          {
+            type: 'paragraph',
+            text: '配置完成后直接对助手说：「帮我评估这个目录里图片的质量」「选出最好的 30 张照片」「清理工作空间里质量差的图片」。',
+          },
+          {
+            type: 'callout',
+            variant: 'warn',
+            title: '工作空间清理安全机制',
+            text: 'cleanup_workspace_images 的删除操作被严格限制在 workspace 目录内：解析真实路径后经 relative_to 双重校验边界，默认 dry_run=True 只报告待删清单、不实际删除，每个文件删除前还会再次校验路径。',
+          },
+        ],
+      },
+      {
+        id: 'gui',
+        title: 'Web GUI',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: '基于 Gradio 的浏览器界面，把 CLI 全部参数映射为界面控件，评分复用同一条 HybridScorer 装配链——同目录同参数下，GUI 与 CLI 的评分结果字节级一致。默认仅本机可访问（127.0.0.1:7860），局域网访问需显式传 --host 0.0.0.0。',
+          },
+          {
+            type: 'code',
+            language: 'bash',
+            code: 'pip install -e ".[gui]"\nflashgaze-webui\n\n# 预填目录并使用 8080 端口\nflashgaze-webui --dir ./photos --port 8080\n\n# 局域网访问\nflashgaze-webui --host 0.0.0.0 --port 8080',
+          },
+          {
+            type: 'table',
+            headers: ['启动参数', '说明'],
+            rows: [
+              ['--host HOST', '监听地址（默认 127.0.0.1；局域网用 0.0.0.0）'],
+              ['--port PORT', '监听端口（默认 7860）'],
+              ['--dir PATH', '预填图片目录（仅填入输入框，不自动开始评分）'],
+              ['--share', '启用 Gradio 临时公网链接'],
+              ['--version', '打印版本号并退出'],
+            ],
+          },
+          {
+            type: 'table',
+            headers: ['界面区块', '内容'],
+            rows: [
+              ['目录与基础参数', '目录、--top、--threshold、--scene、--no-vlm'],
+              ['CV 增强维度', '构图 / 噪点 / 色彩 / 人像 / 去重 / --no-downscale'],
+              ['权重', '五维滑块（清晰度 / 曝光 / 构图 / 噪点 / 色彩），自动归一化'],
+              ['VLM 配置', '提供商、API Key、端点、模型、并发数（离线模式下禁用）'],
+              ['评分结果', 'JSON 摘要 + 可排序表格（列与 CSV 完全一致）'],
+              ['高分图预览', '按分数降序的缩略图画廊，含分数 / 入选标记 / VLM 理由'],
+              ['筛选', '按入选 / 最低分数 / 关键字筛选表格与画廊（不影响导出）'],
+              ['导出', '复制 / 移动到目录、下载 JSON、下载 CSV'],
+            ],
+          },
+          {
+            type: 'callout',
+            variant: 'info',
+            title: '离线模式',
+            text: '勾选「禁用 VLM（纯离线 CV 评分）」即可在无 API Key 环境下完成全流程评分，与 flashgaze --no-vlm 完全一致；此时 VLM 配置区自动禁用，避免无效配置。',
+          },
+        ],
+      },
+      {
+        id: 'agent',
+        title: 'AI Agent 接入',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: '仓库内置 SKILL.md，兼容 agentskills.io 标准，可被 TRAE、Claude Code、Cursor 等支持该标准的工具一键装载为技能：',
+          },
+          {
+            type: 'code',
+            language: 'bash',
+            code: '# 通过 skills CLI 安装\nnpx skills add QianQianLuLu1/FlashGaze\n\n# 或手动复制 SKILL.md 到对应工具的 skills 目录',
+          },
+          {
+            type: 'paragraph',
+            text: '或在任意 Python 脚本里经 subprocess 稳定调用——stdout 只承载 JSON，日志全部走 stderr：',
+          },
+          {
+            type: 'code',
+            language: 'python',
+            code: `import subprocess, json
+
+result = subprocess.run(
+    ["flashgaze", "./photos", "--top", "30", "--json", "--no-vlm"],
+    capture_output=True, text=True, timeout=600
+)
+if result.returncode == 0:
+    report = json.loads(result.stdout)
+    for img in report["images"]:
+        if img["selected"]:
+            print(f"入选: {img['file']} 分数={img['score']}")`,
+          },
+        ],
+      },
+      {
+        id: 'config',
+        title: '配置与返回码',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: '配置优先级：CLI 参数 > 环境变量 > 配置文件（config.example.json）> 默认值；weights 字段仅支持配置文件设置。',
+          },
+          {
+            type: 'table',
+            headers: ['环境变量', '说明', '默认值'],
+            rows: [
+              ['FLASHGAZE_API_KEY', 'VLM API Key（--no-vlm 模式不需要）', '—'],
+              ['FLASHGAZE_API_BASE', 'API 端点', 'DashScope compatible-mode 端点'],
+              ['FLASHGAZE_MODEL', '模型名称', 'qwen-vl-max'],
+              ['FLASHGAZE_VLM_PROVIDER', '提供商：qwen / openai / anthropic / ollama', 'qwen'],
+              ['FLASHGAZE_SCENE', '场景模式', 'auto'],
+              ['FLASHGAZE_TIMEOUT', '请求超时（秒）', '30'],
+              ['FLASHGAZE_WORKERS', '并发线程数', '4'],
+              ['FLASHGAZE_MAX_RETRIES', 'VLM 重试次数（仅超时 / 连接错误）', '3'],
+              ['FLASHGAZE_VLM_MAX_ADJUSTMENT', 'VLM 补偿上限', '10.0'],
+            ],
+          },
+          {
+            type: 'table',
+            headers: ['返回码', '含义'],
+            rows: [
+              ['0', '成功'],
+              ['1', '参数错误'],
+              ['2', 'API 调用失败（保留码 — VLM 失败已降级为纯 CV）'],
+              ['3', '目录无效或无图片'],
+              ['4', '图片处理错误（保留码 — 单图损坏已降级为 error 字段）'],
+              ['5', '导出失败'],
+              ['6', '配置错误（缺 API Key 等）'],
+            ],
+          },
+          {
+            type: 'paragraph',
+            text: '返回码 2 与 4 为保留码：VLM 调用失败降级为纯 CV（补偿 0），单图损坏降级为该图 error 字段且 score=0，两者均不中断批处理。',
+          },
+        ],
+      },
+      {
+        id: 'quality',
+        title: '测试与技术栈',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: 'pytest 全量 1076 项用例（1076 通过 / 29 跳过，覆盖率 90.49% ≥ 80% 门禁），覆盖 CV 引擎、VLM 客户端、混合评分器、导出器、CLI 解析器、端到端流程、可复现性、配置层与清理安全——评分结果可复现、可解释，不是一句口号。',
+          },
+          {
+            type: 'table',
+            headers: ['依赖', '用途'],
+            rows: [
+              ['Python 3.10+', '运行时'],
+              ['OpenCV 4.x（headless）', 'CV 评分（拉普拉斯方差、直方图、Otsu 阈值分割）'],
+              ['Pillow', '图片解码兜底（WebP、损坏 JPEG）'],
+              ['NumPy', '数组运算'],
+              ['requests', 'VLM API 调用（Qwen-VL / OpenAI 兼容端点）'],
+              ['litellm', '多 VLM 统一调用层（可选安装）'],
+              ['mcp', 'MCP Server（可选安装）'],
+            ],
+          },
+        ],
+      },
+    ],
+  },
+
+  'nikki-gallery': {
+    tagline:
+      '专为《无限暖暖》玩家打造的 Windows 桌面相册管理软件 — 扫描、浏览、编辑、整理、分享，一站式完成，数据全部留在本地',
+    releaseUrl: 'https://github.com/QianQianLuLu1/MeowStarMap/releases',
+    sections: [
+      {
+        id: 'overview',
+        title: '项目简介',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: '喵星图（MeowStarMap，前身 NikkiGallery「暖暖图库」）是一款 Windows 桌面端相册管理软件，为「无限暖暖」玩家而设计：自动扫描游戏截图与录屏文件，提供专业的图片浏览、编辑、分类管理与搜索能力，一站式覆盖相册生活的全流程。',
+          },
+          {
+            type: 'paragraph',
+            text: '所有数据都存储在本地，不上传任何云端——相册里的每一张搭配作品，都只属于你自己。',
+          },
+          {
+            type: 'callout',
+            variant: 'info',
+            title: '本地优先',
+            text: '扫描索引、编辑结果与分类档案全部存储在本机 SQLite 数据库中，不上传云端。',
+          },
+        ],
+      },
+      {
+        id: 'features',
+        title: '功能总览',
+        blocks: [
+          {
+            type: 'features',
+            items: [
+              {
+                icon: 'scan',
+                title: '智能扫描',
+                description:
+                  '自动定位游戏目录（Steam / Epic 注册表 + 全盘签名扫描），增量扫描、多盘符并发；智能区分游戏截图、启动器缓存与云相册三类来源。',
+              },
+              {
+                icon: 'gallery',
+                title: '多视图图库',
+                description:
+                  '网格、列表、瀑布流、时间线、活动时间轴 5 种浏览模式，全屏查看与幻灯片播放，Ctrl / Shift 多选批量操作。',
+              },
+              {
+                icon: 'edit',
+                title: '专业图片编辑',
+                description:
+                  '14 项基础调整 + HSL 八色独立调色 + RGB 多通道曲线 + 色调分离 + 滤镜预设，完整撤销 / 重做与批量应用。',
+              },
+              {
+                icon: 'video',
+                title: '视频处理',
+                description:
+                  '缩略图提取、视频裁剪、0.25x–4x 调速、格式转换、Apple Live Photo 导出。',
+              },
+              {
+                icon: 'organize',
+                title: '智能整理',
+                description:
+                  '系统分类 + 三级自定义分类树（拖拽排序 / 颜色标签），标签管理，5 种智能分组维度（相册类型 / 场景 / 时段 / 套装 / 类型）。',
+              },
+              {
+                icon: 'profile',
+                title: '共鸣录（2.5.0 新增）',
+                description:
+                  '抽卡记录浏览与手动补录、我的衣橱拥有状态与套装收集进度、本地 JSON 导入导出、个人统计；抽卡与衣橱数据纯离线运行。',
+              },
+              {
+                icon: 'share',
+                title: '设备同步（2.5.5 新增）',
+                description:
+                  '内置 NikkiSync 协议 v1 服务端，局域网 HTTPS + WebSocket 完成配对认证，移动端可直接同步本机媒体库；「同步图库」板块默认关闭。',
+              },
+              {
+                icon: 'dedup',
+                title: '重复检测',
+                description:
+                  'SHA256 精确比对 + 感知哈希（pHash）双重检测，4 维智能评分推荐保留项。',
+              },
+              {
+                icon: 'share',
+                title: '分享与备份',
+                description:
+                  '微信 / QQ / vivo 剪贴板分享 + WiFi 局域网传输（PIN 鉴权）；自动定时备份 + 手动备份，5 份 LRU 轮转保留。',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'more',
+        title: '更多能力',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: '除相册主线功能外，还内建了一组让长期使用更省心的配套能力：',
+          },
+          {
+            type: 'features',
+            items: [
+              {
+                icon: 'languages',
+                title: '12 种语言',
+                description: '内建 12 种语言界面（i18next 国际化）。',
+              },
+              {
+                icon: 'theme',
+                title: '双主题',
+                description: '默认主题之外，提供「柔粉轻奢」主题。',
+              },
+              {
+                icon: 'plugins',
+                title: '插件系统',
+                description: '开放插件体系，功能可以继续生长。',
+              },
+              {
+                icon: 'profile',
+                title: '角色档案',
+                description: '多账号 / UID 隔离的角色档案管理，不同存档的素材互不混杂。',
+              },
+              {
+                icon: 'decrypt',
+                title: '游戏参数解密',
+                description: '内置游戏参数解密工具。',
+              },
+              {
+                icon: 'diagnose',
+                title: '诊断工具',
+                description: '内置诊断能力，排障有据可依。',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'stack',
+        title: '技术栈',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: 'Electron + React 的现代桌面技术组合，SQLite 本地存储、sharp 与 FFmpeg 双引擎处理图片与视频：',
+          },
+          {
+            type: 'table',
+            headers: ['领域', '技术'],
+            rows: [
+              ['桌面框架', 'Electron 41.10'],
+              ['前端框架', 'React 19.2 + TypeScript 5.9'],
+              ['状态管理', 'Zustand 5.0'],
+              ['样式方案', 'Tailwind CSS 3.4'],
+              ['数据库', 'SQLite（better-sqlite3 12.11）'],
+              ['图片处理', 'sharp 0.35'],
+              ['视频处理', 'ffmpeg-static + fluent-ffmpeg'],
+              ['构建工具', 'Vite 6.4'],
+              ['动画库', 'Motion 12.42'],
+              ['国际化', 'i18next 26.3 + react-i18next 17.0'],
+              ['全文搜索', 'FlexSearch 0.8'],
+              ['FFI 调用', 'koffi 3.1'],
+              ['参数校验', 'zod 4.4'],
+              ['测试框架', 'Vitest 5.0'],
+            ],
+          },
+        ],
+      },
+      {
+        id: 'download',
+        title: '下载安装',
+        blocks: [
+          {
+            type: 'steps',
+            items: [
+              { title: 'GitHub Releases', text: '前往 Releases 页面下载最新版安装包。' },
+              { title: '其他渠道', text: '抖音 / B站 搜索「纤璐不会玩摄影」获取下载指引。' },
+            ],
+          },
+          {
+            type: 'callout',
+            variant: 'info',
+            title: '系统要求',
+            text: 'Windows 10（1803 及以上）/ Windows 11，x64 架构。',
+          },
+        ],
+      },
+      {
+        id: 'dev',
+        title: '开发者指南',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: '前提条件：Node.js ≥ 22.12.0。克隆仓库后即可本地跑起完整桌面应用：',
+          },
+          {
+            type: 'code',
+            language: 'bash',
+            code: 'git clone https://github.com/QianQianLuLu1/MeowStarMap.git\ncd MeowStarMap\nnpm install      # 安装依赖\nnpm run dev      # 启动开发模式\nnpm run dist:win # 打包 Windows 安装包',
+          },
+          {
+            type: 'table',
+            headers: ['常用命令', '用途'],
+            rows: [
+              ['npm run test', '运行测试'],
+              ['npm run lint', '代码检查'],
+              ['npm run typecheck', '类型检查'],
+              ['npm run format', '格式化代码'],
+              ['npm run storybook', '启动组件文档站（Storybook，端口 6006）'],
+            ],
+          },
+          {
+            type: 'paragraph',
+            text: '仓库目录一览（完整架构说明见 ARCHITECTURE.md）：',
+          },
+          {
+            type: 'code',
+            code: `src/
+├── main/          # Electron 主进程（IPC 通信、数据库、扫描器、服务层）
+│   ├── app/           # 应用生命周期编排
+│   ├── database/      # SQLite + 写入子进程
+│   ├── ipc/           # IPC 通道处理（43 个 registerXxxHandlers + 4 个辅助）
+│   ├── preload/       # preload 桥命名空间（33 个 api/*.ts）
+│   ├── scanner/       # 文件扫描器（含子进程）
+│   ├── services/      # 业务服务层（16 个服务/配置文件）
+│   ├── sync/          # NikkiSync 协议移植面（认证 / 配对 / 服务端）
+│   └── media-worker/  # 缩略图 / pHash / 重复检测子进程
+├── renderer/      # 渲染进程（React 前端）
+│   ├── components/    # 通用 / 编辑器 / 图库 / 布局 / 共鸣录 / 扫描 / 同步 / 视频组件
+│   ├── pages/         # 页面与设置分区（含 settings/ 与 sync-gallery/）
+│   ├── stores/        # Zustand 状态管理
+│   └── i18n/          # 12 种语言文件
+└── shared/        # 跨进程共享类型与错误码`,
+          },
+        ],
+      },
+      {
+        id: 'docs',
+        title: '相关文档',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: '想深入了解架构、参与贡献或自行排障，仓库内有一整套文档：',
+          },
+          {
+            type: 'links',
+            items: [
+              {
+                label: 'ARCHITECTURE.md',
+                href: 'https://github.com/QianQianLuLu1/MeowStarMap/blob/main/ARCHITECTURE.md',
+                description: '架构设计文档（中文）',
+              },
+              {
+                label: 'ARCHITECTURE.en.md',
+                href: 'https://github.com/QianQianLuLu1/MeowStarMap/blob/main/ARCHITECTURE.en.md',
+                description: '架构设计文档（英文）',
+              },
+              {
+                label: 'DEVELOPMENT.md',
+                href: 'https://github.com/QianQianLuLu1/MeowStarMap/blob/main/DEVELOPMENT.md',
+                description: '开发指南（中文）',
+              },
+              {
+                label: 'DEVELOPMENT.en.md',
+                href: 'https://github.com/QianQianLuLu1/MeowStarMap/blob/main/DEVELOPMENT.en.md',
+                description: '开发指南（英文）',
+              },
+              {
+                label: 'CHANGELOG.md',
+                href: 'https://github.com/QianQianLuLu1/MeowStarMap/blob/main/CHANGELOG.md',
+                description: '变更日志',
+              },
+              {
+                label: 'docs/',
+                href: 'https://github.com/QianQianLuLu1/MeowStarMap/tree/main/docs',
+                description: 'IPC 契约、插件 API、排障手册等',
+              },
+              {
+                label: 'docs/tutorial/用户使用教程.md',
+                href: 'https://github.com/QianQianLuLu1/MeowStarMap/blob/main/docs/tutorial/%E7%94%A8%E6%88%B7%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B.md',
+                description: '面向玩家的图文使用教程',
+              },
+              {
+                label: 'docs/Storybook使用指南.md',
+                href: 'https://github.com/QianQianLuLu1/MeowStarMap/blob/main/docs/Storybook%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.md',
+                description: '组件文档站使用指南（npm run storybook，端口 6006）',
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+} as const;
