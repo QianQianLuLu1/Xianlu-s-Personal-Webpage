@@ -1,0 +1,90 @@
+{
+  "hero": {
+    "badge": "Same name everywhere",
+    "tagline1": "In a stylist's world, getting computers to behave along the way",
+    "tagline2": "Breaking the stereotype that equates Infinity Nikki players with being bad at computers",
+    "ctaTools": "Browse open-source tools",
+    "ctaGallery": "View my photography"
+  },
+  "projects": {
+    "title": "Open-Source Tools",
+    "lead": "Erasing, bit by bit, the equals sign between “Infinity Nikki players” and “bad at computers”",
+    "emptyTitle": "Tools are being organized",
+    "emptyDesc": "The tool list is empty for now — new releases may be on the way. Check back soon.",
+    "viewDetail": "View details",
+    "download": "Download",
+    "viewDetailAria": "View details of {{name}}",
+    "downloadAria": "Download {{name}}",
+    "coverAlt": "{{name}} cover",
+    "downloadChannel": {
+      "thunder": "Thunder download",
+      "baidu": "Baidu download",
+      "github": "GitHub download",
+      "qq": "QQ download"
+    }
+  },
+  "journey": {
+    "title": "The Photography Journey",
+    "lead": "From figuring out the gear in my hands to shots you can tell are mine",
+    "emptyTitle": "The journey is being prepared",
+    "emptyDesc": "Stage content isn't in place yet. Check back soon.",
+    "stages": {
+      "gear": {
+        "title": "Gear",
+        "description": "From casual phone snaps to mastering every setting in the camera. Get to know your tools first, then talk about creating.",
+        "photoAlt": "Checking settings on a tablet in a cool-blue café, with a mermaid mural on the wall behind"
+      },
+      "composition": {
+        "title": "Composition",
+        "description": "Learning what to leave out matters more than piling things in. Strip away the noise and the subject stands on its own.",
+        "photoAlt": "A low-angle corner of a pink-purple apartment block against blue sky with a single cloud, generous negative space"
+      },
+      "light": {
+        "title": "Light",
+        "description": "Chasing the light. Dawn, dusk, midnight streetlamps — the same scene becomes a different place under different light.",
+        "photoAlt": "A full moon hanging low over the Lujiazui skyline at night, red lights reflected across the river"
+      },
+      "style": {
+        "title": "Style",
+        "description": "No longer copying other people's grading — slowly recognizing my own shots at a glance. That's probably where style begins.",
+        "photoAlt": "A white tent with warm string lights on a nighttime meadow, smoke rolling under a darkened sky"
+      }
+    }
+  },
+  "gallery": {
+    "title": "Gallery",
+    "lead": "<num/> photos of light, city blocks, and moments still waiting for a title",
+    "emptyTitle": "Photos aren't in place yet",
+    "emptyDesc": "The works didn't load, possibly due to a network hiccup. Wait a moment or refresh to retry.",
+    "cardAria": "View photo {{title}}",
+    "modalTitle": "Photo {{title}}",
+    "modalDesc": "Photo {{current}} of {{total}}. Use the left and right arrow keys to navigate.",
+    "prev": "Previous photo",
+    "next": "Next photo"
+  },
+  "about": {
+    "title": "About",
+    "lead": "Breaking the stereotype that equates Infinity Nikki players with being bad at computers",
+    "whoTitle": "Who I am",
+    "bio1": "I'm QianLu, known everywhere as “<brand/>” — an independent creator who collects warmth through a lens and organizes inspiration with code. I take photos, and I write code.",
+    "bio2": "I make bite-sized computer explainers for the styling community: turning Infinity Nikki's graphics, frame rates, and crashes into step-by-step settings anyone can follow, published on Bilibili, Xiaohongshu, and more.",
+    "bio3": "Eventually I turned that experience into open-source tools: Nikki Gallery keeps players' scattered screenshots and recordings as one local album, and FlashGaze uses AI to batch-score photos on your own machine — instead of teaching it all from scratch every time, I let the tools run themselves.",
+    "doingTitle": "What I'm working on",
+    "interests": {
+      "portrait": "Portrait photography",
+      "night": "Night scenes",
+      "nikki": "Infinity Nikki",
+      "pc": "PC graphics & frame-rate tuning",
+      "tools": "Open-source tools",
+      "cs": "Computer science explainers"
+    },
+    "socialTitle": "Same name everywhere: 纤璐不会玩摄影",
+    "socialSub": "You can also find me here"
+  },
+  "social": {
+    "douyin": "Douyin",
+    "bilibili": "Bilibili",
+    "xiaohongshu": "Xiaohongshu",
+    "qq": "QQ"
+  }
+}

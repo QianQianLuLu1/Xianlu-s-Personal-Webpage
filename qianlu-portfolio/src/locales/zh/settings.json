@@ -1,0 +1,57 @@
+{
+  "trigger": {
+    "open": "打开设置",
+    "title": "设置"
+  },
+  "title": "设置",
+  "description": "所有更改立即生效，并保存在本机浏览器中。",
+  "storageWarning": "当前浏览器环境无法保存（隐私模式等），设置将仅在本会话生效。",
+  "mode": {
+    "legend": "性能模式",
+    "auto": { "label": "自动", "hint": "按设备性能检测自动选择" },
+    "full": { "label": "完整动效", "hint": "全部动效与玻璃折射强档" },
+    "compat": { "label": "兼容模式", "hint": "关闭高开销动效，优先流畅度" }
+  },
+  "resolution": {
+    "legend": "资源分辨率",
+    "auto": { "label": "自动", "hint": "按屏幕物理像素判定" },
+    "2k": { "label": "2K", "hint": "2560 宽，平均单图更小" },
+    "4k": { "label": "4K", "hint": "3840 宽，细节最全" }
+  },
+  "fps": {
+    "legend": "目标帧率",
+    "note": "若显示器刷新率低于所选档位，实际仍以显示器频率运行。"
+  },
+  "theme": {
+    "legend": "深色模式",
+    "light": "浅色",
+    "dark": "深色"
+  },
+  "palette": {
+    "legend": "配色性格",
+    "air": { "label": "极致轻薄", "hint": "浅灰中性，日常最克制" },
+    "vivid": { "label": "高能猛进", "hint": "黑底撞色，强对比" },
+    "spectrum": { "label": "神通妙彩", "hint": "紫蓝绿柔渐变" },
+    "deep": { "label": "超拉风", "hint": "深海蓝科技感" },
+    "note": "配色性格会即时改变强调色、区块渐变与页脚；「高能猛进」为固定黑底，深浅模式观感一致。"
+  },
+  "status": {
+    "title": "当前状态",
+    "redetect": "重新检测",
+    "detecting": "检测中…",
+    "tier": "当前性能档位",
+    "suggestion": "检测建议",
+    "fps": "实时帧率",
+    "refreshRate": "显示器刷新率",
+    "resolution": "当前加载分辨率",
+    "browser": "浏览器与平台",
+    "autoSuffix": "（自动）",
+    "manualSuffix": "（手动）",
+    "notDetected": "未检测",
+    "unknown": "未知",
+    "res4k": "4K 档",
+    "res2k": "2K 档",
+    "unknownBrowser": "未知浏览器",
+    "unknownOs": "未知系统"
+  }
+}

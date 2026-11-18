@@ -63,3 +63,11 @@ if (typeof window !== 'undefined' && typeof window.IntersectionObserver === 'und
     writable: true,
   });
 }
+
+// i18n：测试锁定中文，避免 jsdom 的 navigator.language（en-US）触发自动检测。
+// 必须在导入 i18n 模块前写入存储键（静态 import 会被提升，故用动态 import），
+// 且需等待上方 localStorage polyfill 就位。
+if (typeof window !== 'undefined') {
+  window.localStorage.setItem('qianlu.lang', 'zh');
+  await import('@/lib/i18n');
+}

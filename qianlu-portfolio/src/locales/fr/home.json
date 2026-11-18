@@ -1,0 +1,90 @@
+{
+  "hero": {
+    "badge": "Même pseudo partout",
+    "tagline1": "Dans un monde de stylistes, apprivoiser l'informatique au passage",
+    "tagline2": "Briser le stéréotype qui associe les joueurs d'Infinity Nikki à l'incompétence informatique",
+    "ctaTools": "Découvrir les outils open source",
+    "ctaGallery": "Voir mes photographies"
+  },
+  "projects": {
+    "title": "Outils open source",
+    "lead": "Effacer, petit à petit, le signe « égal » entre « joueurs d'Infinity Nikki » et « nuls en informatique »",
+    "emptyTitle": "Les outils sont en cours de préparation",
+    "emptyDesc": "La liste des outils est vide pour le moment — de nouvelles publications arrivent peut-être. Revenez bientôt.",
+    "viewDetail": "Voir les détails",
+    "download": "Télécharger",
+    "viewDetailAria": "Voir les détails de {{name}}",
+    "downloadAria": "Télécharger {{name}}",
+    "coverAlt": "Couverture de {{name}}",
+    "downloadChannel": {
+      "thunder": "Téléchargement Thunder",
+      "baidu": "Téléchargement Baidu",
+      "github": "Téléchargement GitHub",
+      "qq": "Téléchargement QQ"
+    }
+  },
+  "journey": {
+    "title": "Parcours photo",
+    "lead": "De la découverte du matériel à des photos que l'on reconnaît comme les miennes",
+    "emptyTitle": "Le parcours photo est en préparation",
+    "emptyDesc": "Le contenu des étapes n'est pas encore en place. Revenez bientôt.",
+    "stages": {
+      "gear": {
+        "title": "Matériel",
+        "description": "Des clichés spontanés au smartphone à la maîtrise de chaque réglage de l'appareil. Apprenez d'abord à connaître vos outils, ensuite seulement parlons de création.",
+        "photoAlt": "Vérification des réglages sur une tablette dans un café aux tons bleu froid, avec une fresque de sirène sur le mur derrière"
+      },
+      "composition": {
+        "title": "Composition",
+        "description": "Apprendre à retirer compte plus qu'apprendre à accumuler. Éliminez le bruit visuel petit à petit, et le sujet s'impose de lui-même.",
+        "photoAlt": "En contre-plongée, l'angle d'un immeuble rose-violet et un nuage dans le ciel bleu, avec une large place laissée au vide"
+      },
+      "light": {
+        "title": "Lumière",
+        "description": "À la poursuite de la lumière. Aube, crépuscule, lampadaires nocturnes — une même scène devient un autre lieu sous une autre lumière.",
+        "photoAlt": "Une pleine lune suspendue bas devant les tours de Lujiazui la nuit, des lumières rouges se reflétant sur le fleuve"
+      },
+      "style": {
+        "title": "Style",
+        "description": "Ne plus copier l'étalonnage des autres, et reconnaître peu à peu mes photos au premier coup d'œil — c'est sans doute le signal que le style commence.",
+        "photoAlt": "Une tente blanche et des guirlandes lumineuses chaudes dans une prairie nocturne, de la fumée ondulant sous un ciel assombri"
+      }
+    }
+  },
+  "gallery": {
+    "title": "Portfolio",
+    "lead": "<num/> photos de lumière, de rues et d'instants sans titre",
+    "emptyTitle": "Les photos ne sont pas encore en place",
+    "emptyDesc": "Les œuvres n'ont pas pu être chargées, peut-être à cause d'un aléa réseau. Patientez un instant ou actualisez pour réessayer.",
+    "cardAria": "Voir la photo {{title}}",
+    "modalTitle": "Photo {{title}}",
+    "modalDesc": "Photo {{current}} sur {{total}}. Utilisez les flèches gauche et droite pour naviguer.",
+    "prev": "Photo précédente",
+    "next": "Photo suivante"
+  },
+  "about": {
+    "title": "À propos",
+    "lead": "Briser le stéréotype qui associe les joueurs d'Infinity Nikki à l'incompétence informatique",
+    "whoTitle": "Qui je suis",
+    "bio1": "Je suis QianLu, connue partout sous le nom de « <brand/> » — une créatrice indépendante qui collectionne la chaleur à travers l'objectif et organise l'inspiration avec du code. Je photographie, et je code.",
+    "bio2": "Je fais de la vulgarisation informatique légère pour la communauté des stylistes : je transforme les questions de qualité graphique, de fréquence d'images et de plantages d'Infinity Nikki en réglages pas à pas que chacun peut suivre, publiés sur Bilibili, Xiaohongshu et d'autres plateformes.",
+    "bio3": "J'ai fini par transformer cette expérience en outils open source : Nikki Gallery rassemble les captures d'écran et enregistrements éparpillés des joueurs en un seul album local, et FlashGaze utilise l'IA pour noter des photos par lots sur votre propre machine — plutôt que de tout réexpliquer à chaque fois, je laisse les outils tourner tout seuls.",
+    "doingTitle": "Ce sur quoi je travaille",
+    "interests": {
+      "portrait": "Photographie de portrait",
+      "night": "Scènes nocturnes",
+      "nikki": "Infinity Nikki",
+      "pc": "Optimisation graphique et fréquence d'images sur PC",
+      "tools": "Outils open source",
+      "cs": "Vulgarisation informatique"
+    },
+    "socialTitle": "Même pseudo partout : 纤璐不会玩摄影",
+    "socialSub": "Vous pouvez aussi me retrouver ici"
+  },
+  "social": {
+    "douyin": "Douyin",
+    "bilibili": "Bilibili",
+    "xiaohongshu": "Xiaohongshu",
+    "qq": "QQ"
+  }
+}

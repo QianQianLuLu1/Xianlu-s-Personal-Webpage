@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { XIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { useKbPressProps } from '@/lib/press';
 import { cn } from '@/lib/utils';
@@ -46,6 +47,7 @@ function DialogContent({
   showCloseButton?: boolean;
 }) {
   const kb = useKbPressProps();
+  const { t } = useTranslation();
   return (
     <DialogPortal data-slot="dialog-portal">
       <DialogOverlay />
@@ -63,12 +65,12 @@ function DialogContent({
             data-slot="dialog-close"
             {...kb}
             className={cn(
-              'ring-offset-cream focus:ring-ring absolute top-4 right-4 -m-2 rounded-xs p-2 opacity-70 transition-[opacity,transform,scale] hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none',
+              'ring-offset-cream focus:ring-ring absolute end-4 top-4 -m-2 rounded-xs p-2 opacity-70 transition-[opacity,transform,scale] hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none',
               'press:bg-ink/10 press:scale-[0.98] press:opacity-100 duration-150'
             )}
           >
             <XIcon className="size-4" />
-            <span className="sr-only">关闭</span>
+            <span className="sr-only">{t('action.close')}</span>
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Content>
@@ -80,7 +82,7 @@ function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="dialog-header"
-      className={cn('flex flex-col gap-2 text-center sm:text-left', className)}
+      className={cn('flex flex-col gap-2 text-center sm:text-start', className)}
       {...props}
     />
   );

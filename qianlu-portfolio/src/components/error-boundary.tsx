@@ -3,6 +3,7 @@ import { RefreshCw } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { EmptyIllustration, EmptyState } from '@/components/ui/empty-state';
+import i18n from '@/lib/i18n';
 
 interface RouteErrorBoundaryProps {
   children: ReactNode;
@@ -34,12 +35,12 @@ class RouteErrorBoundary extends Component<RouteErrorBoundaryProps, RouteErrorBo
         <EmptyState
           illustration={<EmptyIllustration />}
           className="glass-tier2 glass-float rounded-card w-full max-w-md"
-          title="页面出了点问题"
-          description="内容渲染时遇到意外错误，刷新通常可以恢复；若反复出现，欢迎通过社交渠道反馈。"
+          title={i18n.t('error.title')}
+          description={i18n.t('error.description')}
           action={
             <Button onClick={this.handleReload}>
               <RefreshCw aria-hidden="true" />
-              刷新页面
+              {i18n.t('action.refresh')}
             </Button>
           }
         />

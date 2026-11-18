@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Aperture, Frame, Palette, Sun } from 'lucide-react';
 
 import PhotoPicture from '@/components/photo-picture';
@@ -47,6 +48,7 @@ function StagePhoto({ photo, alt }: { photo: Photo; alt: string }) {
 }
 
 export default function Journey() {
+  const { t } = useTranslation('home');
   const motionTier = useMotionTier();
 
   return (
@@ -54,9 +56,9 @@ export default function Journey() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="mb-20 text-center sm:mb-24">
-            <h2 className="text-ink text-title mb-4 font-semibold">摄影之路</h2>
+            <h2 className="text-ink text-title mb-4 font-semibold">{t('journey.title')}</h2>
             <p className="text-ink/65 text-lead mx-auto max-w-2xl text-balance">
-              从摸清手里的设备，到拍出认得出是自己拍的片子
+              {t('journey.lead')}
             </p>
           </div>
 
@@ -64,8 +66,8 @@ export default function Journey() {
             <EmptyState
               illustration={<EmptyIllustration />}
               className="glass-tier2 glass-float rounded-card"
-              title="摄影之路筹备中"
-              description="阶段内容暂未就位，稍后再来看看。"
+              title={t('journey.emptyTitle')}
+              description={t('journey.emptyDesc')}
             />
           ) : (
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
@@ -80,7 +82,7 @@ export default function Journey() {
                     {...enterInView(motionTier, { y: 24, delay: index * 0.1, duration: DUR_SLOW })}
                   >
                     <Card className="card-lift ease-spring bg-surface-muted h-full overflow-hidden shadow-none transition-[transform,box-shadow,border-color] duration-300">
-                      {photo && <StagePhoto photo={photo} alt={stage.photoAlt} />}
+                      {photo && <StagePhoto photo={photo} alt={t(stage.photoAlt)} />}
                       {/* 顶距与侧距/底距同为 p-6，四边 padding 一致（UI 细节规则 7） */}
                       <CardContent className="pt-6">
                         <div className="mb-4 flex items-center justify-between">
@@ -95,8 +97,10 @@ export default function Journey() {
                             />
                           </span>
                         </div>
-                        <h3 className="text-ink mb-2 text-xl font-semibold">{stage.title}</h3>
-                        <p className="text-ink/70 text-sm leading-relaxed">{stage.description}</p>
+                        <h3 className="text-ink mb-2 text-xl font-semibold">{t(stage.title)}</h3>
+                        <p className="text-ink/70 text-sm leading-relaxed">
+                          {t(stage.description)}
+                        </p>
                       </CardContent>
                     </Card>
                   </motion.div>

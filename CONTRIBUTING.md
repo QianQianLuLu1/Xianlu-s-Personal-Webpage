@@ -32,18 +32,18 @@
 | `npm run typecheck` | `tsc -b --noEmit` | TypeScript 类型检查 |
 | `npm run format` | `prettier --write "src/**/*.{ts,tsx,css}" "tests/**/*.{ts,tsx}"` | 按 Prettier 格式化源码与测试 |
 
-其余脚本：`test:watch`（`vitest`）、`assets:build`（`node scripts/build-assets.mjs`）、`github:sync`（`node scripts/sync-github-projects.mjs`）、`audit:licenses`（依赖许可证白名单审计）、`bootstrap`（`npm --prefix qianlu-portfolio install`），完整键与取值见两个 `package.json`。
+其余脚本：`test:watch`（`vitest`）、`assets:build`（`node scripts/build-assets.mjs`）、`github:sync`（`node scripts/sync-github-projects.mjs`，脚本当前缺失、暂不可用）、`audit:licenses`（依赖许可证白名单审计）、`bootstrap`（`npm --prefix qianlu-portfolio install`），完整键与取值见两个 `package.json`。
 
 ## 分支与提交约定
 
-当前仓库只有一个 `master` 分支、没有 tag，提交历史为多条提交（以 `git log --oneline` 为准，含 2026-09-25 的 `chore:` 前缀初始导入），无合并提交；仓库内没有 commitlint 或 commit-msg 约定，`.qoder/commands/` 下的命令文档与 `hooks/pre-commit` 只约束验证链。样本不足以支撑任何分支命名或提交信息格式规范，因此**本文件不规定具体规范**，待项目所有者确定后再补。（本地钩子，未随仓库分发；`.git/config` 的 hooksPath 不随克隆分发）
+当前仓库只有 `main` 分支、没有 tag，提交历史目前仅一条初始提交（以 `git log --oneline` 为准）；仓库内没有 commitlint 或 commit-msg 约定。样本不足以支撑任何分支命名或提交信息格式规范，因此**本文件不规定具体规范**，待项目所有者确定后再补。
 
 ## 代码风格与格式
 
 - Prettier 配置见 `qianlu-portfolio/.prettierrc`：`semi: true`、`singleQuote: true`、`printWidth: 100`、`tabWidth: 2`、`trailingComma: "es5"`、`arrowParens: "always"`、`endOfLine: "auto"`，并启用 `prettier-plugin-tailwindcss` 决定 Tailwind 类顺序，不要手工排序。
 - 不参与格式化的路径见 `qianlu-portfolio/.prettierignore`：`node_modules`、`dist`、`build`、`*.lock`，以及脚本自动生成并统一格式化的 `src/data/projects.generated.ts`、`src/data/projects.meta.json`、`src/data/photos.generated.ts`。
 - ESLint 9 flat config 见 `qianlu-portfolio/eslint.config.js`：继承 `js.configs.recommended`、`tseslint.configs.recommended` 与 `eslint-config-prettier`；作用于 `**/*.{ts,tsx}`；`prettier/prettier` 为 `error`（未格式化代码会让 `npm run lint` 直接失败）；另展开 `react-hooks` 推荐规则、`react-refresh/only-export-components` 为 `warn`，并关闭 `@typescript-eslint/no-explicit-any` 与 `@typescript-eslint/no-require-imports`。
-- 项目约定见 `.qoder/rules/qianlu-portfolio.md`：className 必须经 `cn()`（`@/lib/utils`）拼接；路径别名 `@/` → `src/` 需在 `qianlu-portfolio/tsconfig.app.json`、`qianlu-portfolio/vite.config.ts`、`qianlu-portfolio/vitest.config.ts` 三处同步；文件名 kebab-case、组件函数名 PascalCase。
+- 现行约定（源自既有代码，已核实）：className 必须经 `cn()`（`@/lib/utils`）拼接；路径别名 `@/` → `src/` 需在 `qianlu-portfolio/tsconfig.app.json`、`qianlu-portfolio/vite.config.ts`、`qianlu-portfolio/vitest.config.ts` 三处同步；文件名 kebab-case、组件函数名 PascalCase。
 
 ## 目录与生成物
 
@@ -52,7 +52,7 @@
 
 ## 改动后自测
 
-依据 `.qoder/commands/validate.md`，修改 `qianlu-portfolio/src/` 或 `qianlu-portfolio/tests/` 下的文件后，按以下顺序**严格串行**执行，任一步骤退出码非 0 立即停止后续步骤并贴出完整错误输出，不得在验证未全部通过时声称改动完成：
+修改 `qianlu-portfolio/src/` 或 `qianlu-portfolio/tests/` 下的文件后，按以下顺序**严格串行**执行，任一步骤退出码非 0 立即停止后续步骤并贴出完整错误输出，不得在验证未全部通过时声称改动完成：
 
 1. `npm run typecheck`
 2. `npm run lint`
@@ -61,15 +61,12 @@
 补充规则：
 
 - 改动涉及视觉/CSS/构建配置时，在第 3 步通过后追加 `npm run build`。
+- 当前基线为重建版（`projects.meta.json` 的 `reconstructed=true`），追加 `npm run build` 须以 `QIANLU_ACCEPT_RECONSTRUCTED_BASELINE=1` 放行；执行 `github:sync` 恢复联网基线后此要求自动消失（该脚本当前暂不可用，见 `qianlu-portfolio/README.md`）。
 - lint 报 prettier 相关错误时，先执行 `npm run format`，再从第 2 步重新执行 lint；`format` 不是固定首步。
-- 仓库内 `hooks/pre-commit` 把同一条 typecheck → lint → test 链绑定到提交生命周期（`.git/config` 的 `hooksPath = hooks`）；提交时失败会阻止提交，修复后重新提交即可，无需绕过钩子。（本地钩子，未随仓库分发；`.git/config` 的 hooksPath 不随克隆分发）
 
 ## 相关文档
 
 - `README.md`：工作区总览、使用与运行方式、目录结构、授权。
 - `qianlu-portfolio/README.md`：应用级技术栈、数据同步、质量检查、构建与致谢。
-- `.qoder/rules/qianlu-portfolio.md`：项目约定与编码规范。
-- `.qoder/commands/validate.md`：编辑后验证链。
-- `hooks/pre-commit`：提交时验证钩子。（本地钩子，未随仓库分发；`.git/config` 的 hooksPath 不随克隆分发）
 - `LICENSE`：MIT 许可证全文。
 - `CHANGELOG.md`：变更记录（骨架）。

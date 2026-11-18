@@ -9,9 +9,11 @@ import Gallery from '@/features/gallery.tsx';
 import About from '@/features/about.tsx';
 import Footer from '@/components/navs/footer.tsx';
 import ScrollToTop from '@/components/navs/scroll-to-top.tsx';
+import { useDocumentMeta } from '@/hooks/use-document-meta';
 
 export default function Portfolio() {
   const location = useLocation();
+  useDocumentMeta();
 
   useEffect(() => {
     if (!location.hash) {

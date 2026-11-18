@@ -15,25 +15,25 @@ export interface SocialLink {
 export const SOCIAL_LINKS: readonly SocialLink[] = [
   {
     id: 'douyin',
-    label: '抖音',
+    label: 'social.douyin',
     handle: '纤璐不会玩摄影',
     url: 'https://v.douyin.com/XkTzyJeCFIU/',
   },
   {
     id: 'bilibili',
-    label: '哔哩哔哩',
+    label: 'social.bilibili',
     handle: '纤璐不会玩摄影',
     url: 'https://b23.tv/vxdnlqI',
   },
   {
     id: 'xiaohongshu',
-    label: '小红书',
+    label: 'social.xiaohongshu',
     handle: 'QianLu635492596',
     url: 'https://xhslink.com/m/AxkdRvT3QsH',
   },
   {
     id: 'qq',
-    label: 'QQ',
+    label: 'social.qq',
     handle: '635492596',
     url: 'https://qm.qq.com/q/j6m9nxRM30',
   },

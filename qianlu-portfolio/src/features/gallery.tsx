@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Trans, useTranslation } from 'react-i18next';
 import { RefreshCw } from 'lucide-react';
 
 import GalleryCard from '@/components/gallery/GalleryCard';
@@ -16,6 +17,7 @@ const STAGGER_STEP = 0.03;
 const STAGGER_CAP = 0.3;
 
 export default function Gallery() {
+  const { t } = useTranslation(['home', 'common']);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [failedIds, setFailedIds] = useState<string[]>([]);
   const motionTier = useMotionTier();
@@ -31,11 +33,14 @@ export default function Gallery() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="mb-20 text-center sm:mb-24">
-            <h2 className="text-ink text-title mb-4 font-semibold">作品集</h2>
+            <h2 className="text-ink text-title mb-4 font-semibold">{t('gallery.title')}</h2>
             <p className="text-ink/65 text-lead mx-auto max-w-2xl text-balance">
               {/* 照片总数为展示型计数：进视口后滚动停住 */}
-              <AnimatedNumber value={PHOTOS_META.count} />{' '}
-              张照片，记录光、街区与那些还没想好标题的瞬间
+              <Trans
+                i18nKey="gallery.lead"
+                ns="home"
+                components={{ num: <AnimatedNumber value={PHOTOS_META.count} /> }}
+              />
             </p>
           </div>
 
@@ -43,11 +48,11 @@ export default function Gallery() {
             <EmptyState
               illustration={<EmptyIllustration />}
               className="glass-tier2 glass-float rounded-card"
-              title="照片还没就位"
-              description="作品暂时没有加载出来，可能是网络波动，稍等片刻或刷新重试。"
+              title={t('gallery.emptyTitle')}
+              description={t('gallery.emptyDesc')}
               action={
                 <Button onClick={() => window.location.reload()}>
-                  <RefreshCw aria-hidden="true" /> 刷新重试
+                  <RefreshCw aria-hidden="true" /> {t('common:action.retry')}
                 </Button>
               }
             />

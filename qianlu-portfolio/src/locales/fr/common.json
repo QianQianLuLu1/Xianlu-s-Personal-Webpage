@@ -1,0 +1,40 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "tools": "Outils open source",
+    "journey": "Parcours photo",
+    "gallery": "Portfolio",
+    "about": "À propos",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu"
+  },
+  "lang": {
+    "switch": "Changer de langue"
+  },
+  "theme": {
+    "toLight": "Passer en mode clair",
+    "toDark": "Passer en mode sombre"
+  },
+  "action": {
+    "copy": "Copier",
+    "copied": "Copié",
+    "copyCode": "Copier le code",
+    "close": "Fermer",
+    "refresh": "Recharger la page",
+    "retry": "Actualiser et réessayer",
+    "backToTop": "Retour en haut"
+  },
+  "footer": {
+    "copyright": "© {{year}} QianLu · Open source sous licence MIT",
+    "attribution": "Développé à partir de <1>geekpius/portfolio</1> (MIT)"
+  },
+  "error": {
+    "title": "Un problème est survenu",
+    "description": "Une erreur inattendue s'est produite lors du rendu de la page. Actualiser résout généralement le problème ; si cela persiste, n'hésitez pas à me le signaler via les réseaux sociaux."
+  },
+  "meta": {
+    "title": "纤璐不会玩摄影",
+    "description": "Photographies, vulgarisation informatique et outils open source par 纤璐不会玩摄影 — pour briser le stéréotype selon lequel les joueurs d'Infinity Nikki ne comprennent rien aux ordinateurs.",
+    "projectTitle": "{{name}} · Outils open source | 纤璐不会玩摄影"
+  }
+}

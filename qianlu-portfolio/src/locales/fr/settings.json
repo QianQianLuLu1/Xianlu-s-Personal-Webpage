@@ -1,0 +1,57 @@
+{
+  "trigger": {
+    "open": "Ouvrir les paramètres",
+    "title": "Paramètres"
+  },
+  "title": "Paramètres",
+  "description": "Toutes les modifications prennent effet immédiatement et sont enregistrées dans ce navigateur.",
+  "storageWarning": "Ce navigateur ne peut pas enregistrer de données (mode privé, etc.) : les paramètres ne s'appliqueront qu'à cette session.",
+  "mode": {
+    "legend": "Mode de performance",
+    "auto": { "label": "Auto", "hint": "Choisi automatiquement selon les performances de l'appareil" },
+    "full": { "label": "Effets complets", "hint": "Toutes les animations et réfraction de verre intense" },
+    "compat": { "label": "Mode compatibilité", "hint": "Désactive les effets coûteux, privilégie la fluidité" }
+  },
+  "resolution": {
+    "legend": "Résolution des ressources",
+    "auto": { "label": "Auto", "hint": "Selon les pixels physiques de l'écran" },
+    "2k": { "label": "2K", "hint": "2560 de large, images plus légères en moyenne" },
+    "4k": { "label": "4K", "hint": "3840 de large, détail maximal" }
+  },
+  "fps": {
+    "legend": "Fréquence d'images cible",
+    "note": "Si la fréquence de rafraîchissement de votre écran est inférieure au palier choisi, l'affichage restera à la fréquence de l'écran."
+  },
+  "theme": {
+    "legend": "Mode sombre",
+    "light": "Clair",
+    "dark": "Sombre"
+  },
+  "palette": {
+    "legend": "Personnalisation chromatique",
+    "air": { "label": "Légèreté extrême", "hint": "Neutres gris clair, le look quotidien le plus sobre" },
+    "vivid": { "label": "Haute tension", "hint": "Couleurs vives sur fond noir, fort contraste" },
+    "spectrum": { "label": "Éclat prismatique", "hint": "Dégradés doux violet-bleu-vert" },
+    "deep": { "label": "Courant profond", "hint": "Bleu abyssal, ambiance tech" },
+    "note": "La personnalisation chromatique change instantanément les couleurs d'accent, les dégradés de sections et le pied de page ; « Haute tension » conserve un fond noir fixe en modes clair comme sombre."
+  },
+  "status": {
+    "title": "État actuel",
+    "redetect": "Relancer la détection",
+    "detecting": "Détection en cours…",
+    "tier": "Palier de performance actuel",
+    "suggestion": "Recommandation de détection",
+    "fps": "Fréquence d'images en temps réel",
+    "refreshRate": "Fréquence de rafraîchissement de l'écran",
+    "resolution": "Résolution chargée",
+    "browser": "Navigateur et plateforme",
+    "autoSuffix": " (auto)",
+    "manualSuffix": " (manuel)",
+    "notDetected": "Non détecté",
+    "unknown": "Inconnu",
+    "res4k": "Palier 4K",
+    "res2k": "Palier 2K",
+    "unknownBrowser": "Navigateur inconnu",
+    "unknownOs": "Système inconnu"
+  }
+}

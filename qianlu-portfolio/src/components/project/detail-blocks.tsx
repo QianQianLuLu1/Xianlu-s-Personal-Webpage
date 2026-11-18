@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowDown,
   ArrowRight,
@@ -67,10 +68,12 @@ const DETAIL_ICONS: Record<DetailIcon, LucideIcon> = {
 };
 
 function ParagraphBlock({ text }: { text: string }) {
-  return <p className="text-ink/70 leading-relaxed">{text}</p>;
+  const { t } = useTranslation('detail');
+  return <p className="text-ink/70 leading-relaxed">{t(text)}</p>;
 }
 
 function FeaturesBlock({ items }: { items: readonly DetailFeature[] }) {
+  const { t } = useTranslation('detail');
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       {items.map((item) => {
@@ -84,9 +87,9 @@ function FeaturesBlock({ items }: { items: readonly DetailFeature[] }) {
               >
                 <Icon className="size-4" />
               </span>
-              <h3 className="text-ink text-sm font-semibold">{item.title}</h3>
+              <h3 className="text-ink text-sm font-semibold">{t(item.title)}</h3>
             </div>
-            <p className="text-ink/60 mt-2.5 text-sm leading-relaxed">{item.description}</p>
+            <p className="text-ink/60 mt-2.5 text-sm leading-relaxed">{t(item.description)}</p>
           </div>
         );
       })}
@@ -95,18 +98,19 @@ function FeaturesBlock({ items }: { items: readonly DetailFeature[] }) {
 }
 
 function FlowBlock({ nodes, note }: { nodes: readonly DetailFlowNode[]; note?: string }) {
+  const { t } = useTranslation('detail');
   return (
     <div>
       <ol className="grid gap-4 md:grid-cols-4">
         {nodes.map((node, index) => (
           <li key={node.title} className="relative flex flex-col">
             <div className="border-hairline bg-pine/5 rounded-card h-full border p-4 text-center">
-              <p className="text-ink font-mono text-sm font-semibold">{node.title}</p>
-              {/* 多行步骤列表显式左对齐，不继承卡片的 text-center（UI 细节规则 6） */}
-              <ul className="mt-1.5 space-y-0.5 text-left">
+              <p className="text-ink font-mono text-sm font-semibold">{t(node.title)}</p>
+              {/* 多行步骤列表显式起始侧对齐，不继承卡片的 text-center（UI 细节规则 6） */}
+              <ul className="mt-1.5 space-y-0.5 text-start">
                 {node.lines.map((line) => (
                   <li key={line} className="text-ink/60 text-xs leading-relaxed">
-                    {line}
+                    {t(line)}
                   </li>
                 ))}
               </ul>
@@ -115,7 +119,7 @@ function FlowBlock({ nodes, note }: { nodes: readonly DetailFlowNode[]; note?: s
               <>
                 <ArrowRight
                   aria-hidden="true"
-                  className="text-clay absolute top-1/2 -right-[22px] z-(--z-decor) hidden size-4 -translate-y-1/2 md:block"
+                  className="text-clay absolute top-1/2 -right-[22px] z-(--z-decor) hidden size-4 -translate-y-1/2 md:block rtl:right-auto rtl:-left-[22px] rtl:rotate-180"
                 />
                 <ArrowDown
                   aria-hidden="true"
@@ -126,12 +130,13 @@ function FlowBlock({ nodes, note }: { nodes: readonly DetailFlowNode[]; note?: s
           </li>
         ))}
       </ol>
-      {note && <p className="text-ink/65 mt-3 text-xs leading-relaxed">{note}</p>}
+      {note && <p className="text-ink/65 mt-3 text-xs leading-relaxed">{t(note)}</p>}
     </div>
   );
 }
 
 function StepsBlock({ items }: { items: readonly { title: string; text?: string }[] }) {
+  const { t } = useTranslation('detail');
   return (
     <ol className="space-y-4">
       {items.map((step, index) => (
@@ -143,8 +148,10 @@ function StepsBlock({ items }: { items: readonly { title: string; text?: string 
             {index + 1}
           </span>
           <div>
-            <h3 className="text-ink text-sm font-semibold">{step.title}</h3>
-            {step.text && <p className="text-ink/60 mt-1 text-sm leading-relaxed">{step.text}</p>}
+            <h3 className="text-ink text-sm font-semibold">{t(step.title)}</h3>
+            {step.text && (
+              <p className="text-ink/60 mt-1 text-sm leading-relaxed">{t(step.text)}</p>
+            )}
           </div>
         </li>
       ))}
@@ -153,6 +160,7 @@ function StepsBlock({ items }: { items: readonly { title: string; text?: string 
 }
 
 function CodeBlock({ language, code }: { language?: string; code: string }) {
+  const { t } = useTranslation('common');
   const [copied, setCopied] = useState(false);
 
   const copy = async () => {
@@ -172,11 +180,11 @@ function CodeBlock({ language, code }: { language?: string; code: string }) {
         <button
           type="button"
           onClick={copy}
-          aria-label={copied ? '已复制' : '复制代码'}
+          aria-label={copied ? t('action.copied') : t('action.copyCode')}
           className="code-copy-btn text-ink/65 hover:text-clay inline-flex cursor-pointer items-center gap-1 text-xs transition-colors"
         >
           {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
-          {copied ? '已复制' : '复制'}
+          {copied ? t('action.copied') : t('action.copy')}
         </button>
       </figcaption>
       <pre className="bg-ink/[0.03] text-ink/80 overflow-x-auto p-4 font-mono text-[13px] leading-relaxed">
@@ -193,9 +201,10 @@ function TableBlock({
   headers: readonly string[];
   rows: readonly (readonly string[])[];
 }) {
+  const { t } = useTranslation('detail');
   return (
     <div className="border-hairline rounded-card overflow-x-auto border">
-      <table className="text-ink/70 w-full min-w-max border-collapse text-left text-sm">
+      <table className="text-ink/70 w-full min-w-max border-collapse text-start text-sm">
         <thead>
           <tr className="bg-pine/10">
             {headers.map((header) => (
@@ -204,7 +213,7 @@ function TableBlock({
                 scope="col"
                 className="text-ink border-hairline border-b px-4 py-2.5 text-xs font-semibold whitespace-nowrap"
               >
-                {header}
+                {t(header)}
               </th>
             ))}
           </tr>
@@ -220,7 +229,7 @@ function TableBlock({
                     cellIndex === 0 && 'text-ink font-medium whitespace-nowrap'
                   )}
                 >
-                  {cell}
+                  {t(cell)}
                 </td>
               ))}
             </tr>
@@ -240,6 +249,7 @@ function CalloutBlock({
   title?: string;
   text: string;
 }) {
+  const { t } = useTranslation('detail');
   const isWarn = variant === 'warn';
   const Icon = isWarn ? TriangleAlert : Info;
   return (
@@ -256,8 +266,8 @@ function CalloutBlock({
           className={cn('mt-0.5 size-4 shrink-0', isWarn ? 'text-clay' : 'text-pine')}
         />
         <div>
-          {title && <p className="text-ink text-sm font-semibold">{title}</p>}
-          <p className="text-ink/70 mt-0.5 text-sm leading-relaxed">{text}</p>
+          {title && <p className="text-ink text-sm font-semibold">{t(title)}</p>}
+          <p className="text-ink/70 mt-0.5 text-sm leading-relaxed">{t(text)}</p>
         </div>
       </div>
     </div>
@@ -265,6 +275,7 @@ function CalloutBlock({
 }
 
 function LinksBlock({ items }: { items: readonly DetailLink[] }) {
+  const { t } = useTranslation('detail');
   return (
     <ul className="grid gap-3 sm:grid-cols-2">
       {items.map((link) => (
@@ -277,15 +288,15 @@ function LinksBlock({ items }: { items: readonly DetailLink[] }) {
           >
             <div className="min-w-0">
               <p className="text-clay truncate font-mono text-sm font-medium group-hover:underline">
-                {link.label}
+                {t(link.label)}
               </p>
               {link.description && (
-                <p className="text-ink/60 mt-1 text-xs leading-relaxed">{link.description}</p>
+                <p className="text-ink/60 mt-1 text-xs leading-relaxed">{t(link.description)}</p>
               )}
             </div>
             <ExternalLink
               aria-hidden="true"
-              className="text-ink/55 group-hover:text-clay ml-auto size-4 shrink-0 transition-colors"
+              className="text-ink/55 group-hover:text-clay ms-auto size-4 shrink-0 transition-colors"
             />
           </a>
         </li>

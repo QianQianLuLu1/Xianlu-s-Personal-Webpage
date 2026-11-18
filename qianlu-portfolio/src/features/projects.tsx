@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ChevronDown, Download, Github, HardDrive, MessageCircle } from 'lucide-react';
 
@@ -16,25 +17,26 @@ import {
 import { useImageLoaded } from '@/hooks/use-image-loaded';
 import { useMotionTier } from '@/hooks/use-motion-tier';
 import { enterInView } from '@/lib/motion';
-import { PROJECTS, type Project } from '@/data/projects';
+import { PROJECTS, type DownloadChannel, type Project } from '@/data/projects';
 import { cn } from '@/lib/utils';
 
-const DOWNLOAD_ICONS: Record<string, typeof Github> = {
-  迅雷下载: HardDrive,
-  百度下载: HardDrive,
-  'Github 下载': Github,
-  'QQ 下载': MessageCircle,
+const DOWNLOAD_ICONS: Record<DownloadChannel, typeof Github> = {
+  thunder: HardDrive,
+  baidu: HardDrive,
+  github: Github,
+  qq: MessageCircle,
 };
 
 /** 封面图 + 骨架屏：加载前按 16/9 脉冲占位，加载后 500ms 淡入（与 GalleryCard 同一模式） */
 function ProjectCover({ project }: { project: Project }) {
+  const { t } = useTranslation('home');
   const { ref, loaded, onLoad } = useImageLoaded();
 
   return (
     <div className="bg-cream flex items-center justify-center p-8">
       <Link
         to={`/projects/${project.id}`}
-        aria-label={`查看 ${project.name} 详情`}
+        aria-label={t('projects.viewDetailAria', { name: project.name })}
         className="bg-ink/5 rounded-card relative block w-full overflow-hidden"
       >
         {!loaded && <Skeleton className="absolute inset-0 rounded-none" />}
@@ -48,7 +50,7 @@ function ProjectCover({ project }: { project: Project }) {
             ref={ref}
             onLoad={onLoad}
             src={project.cover}
-            alt={`${project.name} 封面`}
+            alt={t('projects.coverAlt', { name: project.name })}
             className="aspect-video w-full object-cover transition-opacity hover:opacity-85"
             loading="lazy"
             decoding="async"
@@ -60,6 +62,7 @@ function ProjectCover({ project }: { project: Project }) {
 }
 
 export default function Projects() {
+  const { t } = useTranslation('home');
   const motionTier = useMotionTier();
 
   return (
@@ -67,9 +70,9 @@ export default function Projects() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="mb-20 text-center sm:mb-24">
-            <h2 className="text-ink text-title mb-4 font-semibold">开源工具</h2>
+            <h2 className="text-ink text-title mb-4 font-semibold">{t('projects.title')}</h2>
             <p className="text-ink/65 text-lead mx-auto max-w-2xl text-balance">
-              把「暖暖玩家」和「不懂计算机」之间的等号，一点点擦掉
+              {t('projects.lead')}
             </p>
           </div>
 
@@ -77,8 +80,8 @@ export default function Projects() {
             <EmptyState
               illustration={<EmptyIllustration />}
               className="glass-tier2 glass-float rounded-card"
-              title="开源工具整理中"
-              description="工具列表暂时空着，可能正在准备上架，稍后再来看看。"
+              title={t('projects.emptyTitle')}
+              description={t('projects.emptyDesc')}
             />
           ) : (
             <div className="grid gap-10">
@@ -114,7 +117,7 @@ export default function Projects() {
                               )}
                             </div>
                             <CardDescription className="text-base leading-relaxed">
-                              {project.summary}
+                              {t(project.summary, { ns: 'detail', defaultValue: project.summary })}
                             </CardDescription>
                           </CardHeader>
 
@@ -125,22 +128,27 @@ export default function Projects() {
                             <div className="mt-6 flex flex-wrap gap-3">
                               <Button asChild>
                                 <Link to={`/projects/${project.id}`}>
-                                  查看详情
-                                  <ArrowRight />
+                                  {t('projects.viewDetail')}
+                                  <ArrowRight className="rtl:rotate-180" />
                                 </Link>
                               </Button>
                               {project.downloads && (
                                 <DropdownMenu>
                                   <DropdownMenuTrigger asChild>
-                                    <Button aria-label={`下载 ${project.name}`} variant="outline">
+                                    <Button
+                                      aria-label={t('projects.downloadAria', {
+                                        name: project.name,
+                                      })}
+                                      variant="outline"
+                                    >
                                       <Download />
-                                      下载
+                                      {t('projects.download')}
                                       <ChevronDown />
                                     </Button>
                                   </DropdownMenuTrigger>
                                   <DropdownMenuContent align="start">
                                     {project.downloads.map((item) => {
-                                      const Icon = DOWNLOAD_ICONS[item.label] ?? Download;
+                                      const Icon = DOWNLOAD_ICONS[item.channel] ?? Download;
                                       return (
                                         <DropdownMenuItem key={item.url} asChild>
                                           <a
@@ -149,7 +157,7 @@ export default function Projects() {
                                             rel="noopener noreferrer"
                                           >
                                             <Icon />
-                                            {item.label}
+                                            {t('projects.downloadChannel.' + item.channel)}
                                           </a>
                                         </DropdownMenuItem>
                                       );

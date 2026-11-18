@@ -1,0 +1,40 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "tools": "Herramientas de código abierto",
+    "journey": "Camino fotográfico",
+    "gallery": "Portafolio",
+    "about": "Acerca de",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú"
+  },
+  "lang": {
+    "switch": "Cambiar idioma"
+  },
+  "theme": {
+    "toLight": "Cambiar a modo claro",
+    "toDark": "Cambiar a modo oscuro"
+  },
+  "action": {
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "copyCode": "Copiar código",
+    "close": "Cerrar",
+    "refresh": "Recargar página",
+    "retry": "Actualizar y reintentar",
+    "backToTop": "Volver arriba"
+  },
+  "footer": {
+    "copyright": "© {{year}} QianLu · Código abierto bajo licencia MIT",
+    "attribution": "Desarrollado a partir de <1>geekpius/portfolio</1> (MIT)"
+  },
+  "error": {
+    "title": "Algo salió mal",
+    "description": "Se produjo un error inesperado al renderizar el contenido. Recargar la página suele solucionarlo; si ocurre repetidamente, no dudes en avisarme por las redes sociales."
+  },
+  "meta": {
+    "title": "纤璐不会玩摄影",
+    "description": "纤璐不会玩摄影 — fotografía, divulgación informática y herramientas de código abierto. En el mundo de las estilistas, rompiendo el estereotipo que equipara a los jugadores de Infinity Nikki con «no saber de informática».",
+    "projectTitle": "{{name}} · Herramientas de código abierto | 纤璐不会玩摄影"
+  }
+}

@@ -29,6 +29,8 @@ npm run dev        # http://localhost:5173
 npm run github:sync -- --force   # 联网刷新 src/data/projects.generated.ts 与 projects.meta.json
 ```
 
+> **当前状态**：`scripts/sync-github-projects.mjs` 未随工作区恢复，`github:sync` 暂不可用（详见下方 2026-11-08 重建基线说明）；以下条目描述脚本恢复后的目标行为。
+
 - **自动同步**：脚本逐个查询 `QianQianLuLu1/{MeowStarMap,FlashGaze}`，
   取最新正式版 Release 推导版本号（跳过 draft / prerelease）。
 - **构建期强制校验基线新鲜度**：`npm run build` 前会检查 `projects.meta.json`，
@@ -43,7 +45,8 @@ npm run github:sync -- --force   # 联网刷新 src/data/projects.generated.ts �
 
 > **2026-11-08 重建基线说明**：当晚源码拷贝不完整，`projects.generated.ts` / `projects.fallback.ts` /
 > `projects.meta.json` 等丢失，已从当日 `dist/assets/index-zcH8GVbu.js` 逐字重建（保真经 dev vs dist
-> 截图像素 diff 0% 验证，见 `界面细节验收报告_2026-11-08.md`）。重建基线 `meta.reconstructed=true`、
+> 截图像素 diff 0% 验证，见 `界面细节验收报告_2026-11-08.md`——本地一次性产物，已清理）。
+> 重建基线 `meta.reconstructed=true`、
 > 原始 `syncedAt` 不可考，故 `npm run build` 须显式带 `QIANLU_ACCEPT_RECONSTRUCTED_BASELINE=1` 放行。
 > `scripts/sync-github-projects.mjs` 本轮未重建（本机 GitHub 不可达无法验证），`github:sync` 暂不可用；
 > 网络恢复后重建该脚本并执行 `npm run github:sync -- --force` 即可恢复联网基线、解除上述构建限制。
@@ -61,7 +64,7 @@ npm run github:sync -- --force   # 联网刷新 src/data/projects.generated.ts �
 npm run lint       # ESLint 9(忽略规则集中在 eslint.config.js 的 ignores)
 npm run typecheck  # tsc -b --noEmit
 npm test           # vitest run
-npm run github:sync -- --force   # 刷新 GitHub 专区数据
+# github:sync 暂不可用（同步脚本未恢复，见上文「GitHub 专区数据同步」）
 ```
 
 ## 构建
@@ -75,10 +78,13 @@ npm run preview    # 本地预览构建产物
 
 ```
 src/
-├── components/    # 组件(navs / ui / glass / sections ...)
-├── data/          # 静态数据(社交链接、项目信息等)
-├── lib/           # 工具与配置存储
-└── styles/        # 全局样式
+├── components/    # 组件(navs / ui / glass / gallery / project / settings ...)
+├── data/          # 静态数据(社交链接、项目信息、照片清单等)
+├── features/      # 首页区块(hero / journey / projects / gallery / about)
+├── hooks/         # 自定义 Hooks(主题、调色板、设置、图片加载等)
+├── lib/           # 工具与配置(性能调度、按压交互、设计令牌等)
+├── pages/         # 路由页(首页 portfolio、项目详情 project-detail)
+└── index.css      # 全局样式(Tailwind 入口)
 ```
 
 ## 致谢

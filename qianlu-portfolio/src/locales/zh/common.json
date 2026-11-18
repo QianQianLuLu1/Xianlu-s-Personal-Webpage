@@ -1,0 +1,40 @@
+{
+  "nav": {
+    "home": "首页",
+    "tools": "开源工具",
+    "journey": "摄影之路",
+    "gallery": "作品集",
+    "about": "关于",
+    "openMenu": "打开菜单",
+    "closeMenu": "关闭菜单"
+  },
+  "lang": {
+    "switch": "切换语言"
+  },
+  "theme": {
+    "toLight": "切换到浅色模式",
+    "toDark": "切换到暗色模式"
+  },
+  "action": {
+    "copy": "复制",
+    "copied": "已复制",
+    "copyCode": "复制代码",
+    "close": "关闭",
+    "refresh": "刷新页面",
+    "retry": "刷新重试",
+    "backToTop": "回到顶部"
+  },
+  "footer": {
+    "copyright": "© {{year}} QianLu · 以 MIT 协议开源",
+    "attribution": "基于 <1>geekpius/portfolio</1> (MIT) 二次开发"
+  },
+  "error": {
+    "title": "页面出了点问题",
+    "description": "内容渲染时遇到意外错误，刷新通常可以恢复；若反复出现，欢迎通过社交渠道反馈。"
+  },
+  "meta": {
+    "title": "纤璐不会玩摄影",
+    "description": "纤璐不会玩摄影 —— 摄影作品、计算机科普与开源工具。在搭配师的世界里，消解「暖暖玩家」与「不懂计算机」之间的刻板等号。",
+    "projectTitle": "{{name}} · 开源工具 | 纤璐不会玩摄影"
+  }
+}

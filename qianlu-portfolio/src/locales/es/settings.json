@@ -1,0 +1,57 @@
+{
+  "trigger": {
+    "open": "Abrir ajustes",
+    "title": "Ajustes"
+  },
+  "title": "Ajustes",
+  "description": "Todos los cambios se aplican de inmediato y se guardan en este navegador.",
+  "storageWarning": "Este entorno de navegador no puede guardar datos (modo privado, etc.); los ajustes solo se aplicarán a esta sesión.",
+  "mode": {
+    "legend": "Modo de rendimiento",
+    "auto": { "label": "Automático", "hint": "Elegido automáticamente según el rendimiento del dispositivo" },
+    "full": { "label": "Efectos completos", "hint": "Todas las animaciones y refracción de vidrio intensa" },
+    "compat": { "label": "Modo compatible", "hint": "Desactiva los efectos costosos y prioriza la fluidez" }
+  },
+  "resolution": {
+    "legend": "Resolución de recursos",
+    "auto": { "label": "Automático", "hint": "Según los píxeles físicos de la pantalla" },
+    "2k": { "label": "2K", "hint": "2560 de ancho, imágenes más pequeñas en promedio" },
+    "4k": { "label": "4K", "hint": "3840 de ancho, máximo detalle" }
+  },
+  "fps": {
+    "legend": "Tasa de fotogramas objetivo",
+    "note": "Si la frecuencia de actualización del monitor es inferior al nivel elegido, se seguirá ejecutando a la frecuencia del monitor."
+  },
+  "theme": {
+    "legend": "Modo oscuro",
+    "light": "Claro",
+    "dark": "Oscuro"
+  },
+  "palette": {
+    "legend": "Personalidad de la paleta",
+    "air": { "label": "Ligereza extrema", "hint": "Grises claros neutros, el look diario más sobrio" },
+    "vivid": { "label": "Alto voltaje", "hint": "Colores de choque sobre negro, alto contraste" },
+    "spectrum": { "label": "Prisma radiante", "hint": "Degradados suaves de púrpura, azul y verde" },
+    "deep": { "label": "Corriente profunda", "hint": "Azul de las profundidades con aire tecnológico" },
+    "note": "La personalidad de la paleta cambia al instante los colores de acento, los degradados de las secciones y el pie de página; «Alto voltaje» mantiene un fondo negro fijo, con el mismo aspecto en modo claro y oscuro."
+  },
+  "status": {
+    "title": "Estado actual",
+    "redetect": "Volver a detectar",
+    "detecting": "Detectando…",
+    "tier": "Nivel de rendimiento actual",
+    "suggestion": "Sugerencia de detección",
+    "fps": "Tasa de fotogramas en tiempo real",
+    "refreshRate": "Frecuencia de actualización del monitor",
+    "resolution": "Resolución cargada",
+    "browser": "Navegador y plataforma",
+    "autoSuffix": " (automático)",
+    "manualSuffix": " (manual)",
+    "notDetected": "Sin detectar",
+    "unknown": "Desconocido",
+    "res4k": "Nivel 4K",
+    "res2k": "Nivel 2K",
+    "unknownBrowser": "Navegador desconocido",
+    "unknownOs": "Sistema desconocido"
+  }
+}

@@ -1,0 +1,601 @@
+{
+  "chrome": {
+    "breadcrumb": "Breadcrumb",
+    "home": "Home",
+    "tools": "Open-source tools",
+    "openSource": "Open source",
+    "repo": "GitHub repo",
+    "getInstaller": "Get installer",
+    "quickStart": "Quick start",
+    "tocAria": "On this page",
+    "tocTitle": "On this page",
+    "projectNav": "Project navigation",
+    "prev": "Previous project",
+    "next": "Next project",
+    "coverAlt": "{{name}} cover"
+  },
+  "flashgaze": {
+    "tagline": "An AI-assisted local image-scoring CLI — objective CV metrics as the foundation, vision LLMs compensating on demand, built for stable invocation by AI agents",
+    "overview": {
+      "title": "Overview",
+      "b0": "Picking the best few dozen shots out of hundreds is slow and subjective. FlashGaze automates it: a CV engine objectively measures sharpness and exposure on your own machine, an optional vision-LLM layer decides whether blur or darkness is an artistic choice (background bokeh, backlit silhouettes, low-key mood) or a technical mistake, and the result is a sorted, reasoned, structured report you can plug straight into any workflow.",
+      "b1": "It is CLI-first: clean JSON on stdout, logs on stderr, standard exit codes — naturally suited to stable subprocess invocation by AI agents. A Gradio-based browser GUI and a built-in MCP Server are also included, so photographers, developers, and AI assistants all find a way of working that suits them.",
+      "b2": {
+        "title": "Zero-cost mode",
+        "text": "Add --no-vlm to run fully offline: no API key, no data sent anywhere, and the same image scored 10 times in a row returns identical scores (10/10 reproducibility verified)."
+      }
+    },
+    "how": {
+      "title": "How it works",
+      "b0": {
+        "nodes": [
+          {
+            "title": "Image folder",
+            "lines": ["JPG · PNG · WebP"]
+          },
+          {
+            "title": "CVEngine",
+            "lines": ["Sharpness · Exposure", "Composition (experimental)"]
+          },
+          {
+            "title": "HybridScorer",
+            "lines": ["CV weighted score + VLM ±adjustment", "= final score 0–100"]
+          },
+          {
+            "title": "Exporter",
+            "lines": ["Copy / move the picks", "JSON / CSV manifest", "vlm_reason · vlm_provider"]
+          }
+        ],
+        "note": "Side path: VLMClient (optional) feeds into HybridScorer, supporting four provider types: Qwen-VL / GPT-4o / Claude 3 / Ollama."
+      },
+      "b1": {
+        "headers": ["Dimension", "Method", "Range", "Default"],
+        "rows": [
+          ["Sharpness", "Laplacian variance, linear mapping, capped at 500", "0–100", "On"],
+          [
+            "Exposure",
+            "Histogram midtone ratio (penalizes extreme dark / bright pixels)",
+            "0–100",
+            "On"
+          ],
+          [
+            "Composition",
+            "Rule of thirds + Otsu foreground centroid (experimental)",
+            "0–100",
+            "Off (--enable-composition)"
+          ],
+          [
+            "Noise",
+            "BRISQUE no-reference quality assessment (requires opencv-contrib-python)",
+            "0–100",
+            "Off (--enable-noise)"
+          ],
+          ["Color", "HSV histogram entropy + mean saturation", "0–100", "Off (--enable-color)"],
+          [
+            "Portrait",
+            "Face count + sharpness bonus for face regions (requires face_recognition)",
+            "+3~5 bonus",
+            "Off (--enable-portrait)"
+          ],
+          [
+            "Dedup",
+            "PHash perceptual hashing, keeps only the highest score per similar group (requires imagededup)",
+            "Flag only",
+            "Off (--enable-dedup)"
+          ]
+        ]
+      },
+      "b2": "Default weights are 50% sharpness + 50% exposure. When optional dimensions are enabled without an explicit --weights, a sensible set of default weights is injected automatically (e.g. all enabled → sharpness 0.35 / exposure 0.25 / composition 0.20 / noise 0.10 / color 0.10); --weights also allows full customization.",
+      "b3": {
+        "title": "VLM adjustment mechanism",
+        "text": "The VLM receives both the image and the CV metrics, judges whether blur or darkness is creative intent or a shooting mistake, and returns a signed adjustment capped at ±10 points, added to the CV weighted score and clamped to 0–100. Whenever the adjustment is non-zero, the output must include a reason of ≤20 characters (vlm_reason) and the provider identifier (vlm_provider) — every point is traceable."
+      }
+    },
+    "features": {
+      "title": "Core features",
+      "b0": [
+        {
+          "title": "Hybrid scoring engine",
+          "description": "Objective CV scores (Laplacian variance + histogram exposure) form the base and dominate the result; VLM scene adjustments are capped at ±10 points — aesthetics get a voice, but never overturn the verdict."
+        },
+        {
+          "title": "Explainable scores",
+          "description": "Every VLM adjustment comes with a Chinese reason of ≤20 characters and a provider identifier, written into the JSON / CSV output — every single point can be traced."
+        },
+        {
+          "title": "Scene-aware scoring",
+          "description": "--scene switches between differentiated prompts for the four scenes auto / portrait / landscape / still_life, so adjustments fit the subject matter."
+        },
+        {
+          "title": "Multiple VLM providers",
+          "description": "Qwen-VL by default with zero added dependencies; GPT-4o, Claude 3, and Ollama connect through a unified LiteLLM layer — no vendor-specific adapter code."
+        },
+        {
+          "title": "Agent-friendly",
+          "description": "Pure JSON on stdout, logs on stderr, standard exit codes — a subprocess can json.loads the output directly, and batch runs stay stable without surprising the caller."
+        },
+        {
+          "title": "Zero-cost offline",
+          "description": "--no-vlm mode never touches the network and needs no API key — ideal for bulk first-pass filtering and privacy-sensitive scenarios."
+        },
+        {
+          "title": "Graceful degradation",
+          "description": "Broken images return score=0 with an error field; VLM failures fall back to pure CV automatically — no single point of failure interrupts a batch run."
+        },
+        {
+          "title": "Built-in MCP Server",
+          "description": "Install the [mcp] extra, add one config snippet to your AI tool, and it can directly invoke scoring, selection, export, and workspace cleanup."
+        }
+      ]
+    },
+    "install": {
+      "title": "Installation",
+      "b0": [
+        {
+          "title": "Clone the repository and install locally",
+          "text": "Requires Python 3.10+."
+        },
+        {
+          "title": "Add optional capabilities as needed",
+          "text": "Optional capabilities are all off by default and installed on demand; missing dependencies degrade automatically without errors."
+        },
+        {
+          "title": "Verify the installation",
+          "text": "Run flashgaze --version to see the version number."
+        }
+      ],
+      "b3": {
+        "headers": ["Extra", "How to enable", "Added capability"],
+        "rows": [
+          ["mcp", "Built in after install", "MCP Server for AI tools"],
+          ["cv-enhanced", "--enable-noise", "BRISQUE noise scoring"],
+          ["portrait", "--enable-portrait", "Face/portrait bonus (+3~5)"],
+          ["dedup", "--enable-dedup", "PHash perceptual-hash dedup"],
+          ["vlm-multi", "--vlm-provider other than qwen", "GPT-4o / Claude 3 / Ollama"],
+          ["gui", "Launch with flashgaze-webui", "Gradio browser GUI"],
+          [
+            "exif",
+            "--exif (--no-exif-backup skips backup)",
+            "Write scores back to EXIF (JPEG/TIFF only)"
+          ],
+          ["xlsx", "--xlsx (--xlsx-output changes path)", "Generate an .xlsx score sheet"],
+          [
+            "Plugins (built in)",
+            "--enable-plugins (--plugin-dir)",
+            "Discoverable plugin scoring stage"
+          ],
+          ["all", "—", "Install everything above at once"]
+        ]
+      },
+      "b4": {
+        "text": "The default provider qwen does not need LiteLLM; missing optional dependencies never raise errors — the corresponding dimensions return null / 0 / false and the batch continues."
+      }
+    },
+    "quickstart": {
+      "title": "Quick start",
+      "b1": "The JSON report contains a summary (total count, selected count, average score, elapsed time) plus per-image metrics; the selected field marks the picks and can directly drive downstream export and automation."
+    },
+    "cli": {
+      "title": "CLI options",
+      "b0": "Pass an image directory or file path followed by options. Common flags stay in sync with the repository README:",
+      "b1": {
+        "headers": ["Option", "Description"],
+        "rows": [
+          ["--top N", "Select the top N highest-scoring images (default 30)"],
+          ["--threshold SCORE", "Score threshold (alternative to --top)"],
+          ["--export", "Copy high-scoring images to the export directory"],
+          ["--export-dir PATH", "Export destination directory (default ./精选)"],
+          ["--move", "Move instead of copy (requires --export)"],
+          ["--json", "Output the JSON manifest to stdout"],
+          ["--csv", "Output a CSV manifest"],
+          ["--output PATH", "Write the JSON manifest to a file"],
+          ["--csv-output PATH", "CSV manifest output path (default flashgaze_result.csv)"],
+          ["--exif", "Write final scores back to image EXIF metadata (JPEG/TIFF only)"],
+          [
+            "--no-exif-backup",
+            "Skip creating .flashgaze_backup original-file backups when writing EXIF"
+          ],
+          ["--xlsx", "Also generate an .xlsx score sheet"],
+          ["--xlsx-output PATH", ".xlsx output path (default flashgaze_result.xlsx)"],
+          [
+            "--enable-plugins",
+            "Enable the plugin scoring stage (auto-discovers built-in and user plugin directories)"
+          ],
+          [
+            "--plugin-dir PATH",
+            "Extra plugin directory, merged with built-in and user directories for discovery"
+          ],
+          ["--no-vlm", "Disable VLM, CV only (zero API cost)"],
+          ["--vlm-provider PROVIDER", "qwen (default) / openai / anthropic / ollama"],
+          ["--scene SCENE", "auto (default) / portrait / landscape / still_life"],
+          ["--enable-composition", "Enable composition scoring (experimental)"],
+          ["--enable-noise", "Enable BRISQUE noise scoring (model file required)"],
+          ["--enable-color", "Enable color richness scoring"],
+          ["--enable-portrait", "Enable dedicated portrait scoring (+3~5 bonus)"],
+          ["--enable-dedup", "Enable PHash dedup (keeps the highest score among similar images)"],
+          [
+            "--dedup-threshold N",
+            "PHash Hamming distance threshold (default 8; lower is stricter)"
+          ],
+          [
+            "--weights JSON",
+            "Custom dimension weights; optional keys: composition / noise / color"
+          ],
+          ["--workers N", "Concurrent worker threads (default 4)"],
+          ["--config-file PATH", "Path to a JSON config file"],
+          ["--verbose", "Verbose logging (stderr)"],
+          [
+            "--no-downscale",
+            "Disable downscaling of large images (by default, images with a long edge over 2048px are downscaled to save memory)"
+          ],
+          ["--api-key KEY", "VLM API key (overrides the environment variable)"],
+          ["--api-base URL", "VLM endpoint (overrides the environment variable)"],
+          ["--model NAME", "VLM model name (overrides the environment variable)"],
+          ["--version", "Print the version number and exit"]
+        ]
+      }
+    },
+    "vlm": {
+      "title": "VLM providers",
+      "b0": "Four provider types connect through a unified calling layer with no vendor-specific adapter code: qwen (default) uses a native requests path with zero added dependencies; the other three go through the unified LiteLLM layer. All providers take their key from the FLASHGAZE_API_KEY environment variable (Ollama needs no real key — any non-empty value works).",
+      "b1": {
+        "headers": ["Provider", "Example model", "API endpoint", "Requires LiteLLM"],
+        "rows": [
+          ["qwen (default)", "qwen-vl-max", "DashScope compatible-mode endpoint", "No"],
+          ["openai", "gpt-4o", "https://api.openai.com/v1", "Yes"],
+          [
+            "anthropic",
+            "claude-3-5-sonnet-20241022",
+            "Leave empty to use the LiteLLM default endpoint",
+            "Yes"
+          ],
+          ["ollama", "llama3.2-vision", "http://localhost:11434", "Yes"]
+        ]
+      },
+      "b3": {
+        "title": "Graceful degradation",
+        "text": "If LiteLLM is not installed and a non-qwen provider is selected, VLM calls return a litellm_not_installed error and automatically fall back to pure CV mode while the batch completes as usual; invalid provider / scene values fall back to defaults with a warning logged."
+      }
+    },
+    "scene": {
+      "title": "Scene-aware scoring",
+      "b0": "--scene switches the VLM prompt so adjustments focus on the artistic techniques of different subjects; auto (default) lets the VLM determine the scene itself, semantically identical to the original single prompt.",
+      "b1": {
+        "headers": ["Scene", "Best for", "Prompt focus"],
+        "rows": [
+          [
+            "auto (default)",
+            "Mixed folders, unknown content",
+            "The VLM determines the scene itself"
+          ],
+          [
+            "portrait",
+            "Portraits / headshots / street portraits",
+            "Background blur as an artistic technique; sharpness of face regions"
+          ],
+          [
+            "landscape",
+            "Landscapes / nature / architecture",
+            "Long-exposure water and clouds; silhouettes; low-key mood"
+          ],
+          [
+            "still_life",
+            "Products / food / staged still life",
+            "Depth-of-field control; lighting mood; low-key texture"
+          ]
+        ]
+      }
+    },
+    "mcp": {
+      "title": "MCP Server",
+      "b0": "After installing the [mcp] extra, add the configuration below to your AI tool's MCP settings and the assistant can drive every FlashGaze capability directly:",
+      "b2": {
+        "headers": ["Tool", "Function"],
+        "rows": [
+          ["score_images", "Batch-score every image in a directory"],
+          ["score_single_image", "Score a single image and return detailed metrics"],
+          [
+            "score_uploaded_images",
+            "Score images from a list of paths (no directory structure required)"
+          ],
+          [
+            "export_selected_images",
+            "Copy / move high-scoring images to a target directory after scoring"
+          ],
+          [
+            "cleanup_workspace_images",
+            "Delete low-scoring images in place after scoring (with a dry_run safety mode)"
+          ]
+        ]
+      },
+      "b3": "Once configured, just tell the assistant: \"Evaluate the image quality in this directory\", \"Pick the best 30 photos\", or \"Clean up the low-quality images in the workspace\".",
+      "b4": {
+        "title": "Workspace cleanup safety",
+        "text": "Deletion in cleanup_workspace_images is strictly confined to the workspace directory: real paths are resolved and the boundary is double-checked with relative_to, dry_run=True is the default so it only reports the pending deletion list without deleting, and every file's path is re-validated before deletion."
+      }
+    },
+    "gui": {
+      "title": "Web GUI",
+      "b0": "A Gradio-based browser interface maps every CLI option to a UI control, and scoring reuses the same HybridScorer assembly chain — for the same directory and options, GUI and CLI results are byte-identical. By default it is reachable only from the local machine (127.0.0.1:7860); LAN access requires explicitly passing --host 0.0.0.0.",
+      "b2": {
+        "headers": ["Launch flag", "Description"],
+        "rows": [
+          ["--host HOST", "Listen address (default 127.0.0.1; use 0.0.0.0 for LAN)"],
+          ["--port PORT", "Listen port (default 7860)"],
+          [
+            "--dir PATH",
+            "Prefill the image directory (fills the input only; scoring does not start automatically)"
+          ],
+          ["--share", "Enable a temporary public Gradio link"],
+          ["--version", "Print the version number and exit"]
+        ]
+      },
+      "b3": {
+        "headers": ["UI section", "Contents"],
+        "rows": [
+          ["Directory & basic options", "Directory, --top, --threshold, --scene, --no-vlm"],
+          [
+            "Enhanced CV dimensions",
+            "Composition / noise / color / portrait / dedup / --no-downscale"
+          ],
+          [
+            "Weights",
+            "Five sliders (sharpness / exposure / composition / noise / color), auto-normalized"
+          ],
+          [
+            "VLM settings",
+            "Provider, API key, endpoint, model, concurrency (disabled in offline mode)"
+          ],
+          ["Scoring results", "JSON summary + sortable table (columns identical to the CSV)"],
+          [
+            "Top-image preview",
+            "Thumbnail gallery sorted by score descending, with score / selected flag / VLM reason"
+          ],
+          [
+            "Filtering",
+            "Filter the table and gallery by selected / minimum score / keyword (does not affect export)"
+          ],
+          ["Export", "Copy / move to a directory, download JSON, download CSV"]
+        ]
+      },
+      "b4": {
+        "title": "Offline mode",
+        "text": "Check \"Disable VLM (pure offline CV scoring)\" to complete the entire scoring flow without an API key, exactly matching flashgaze --no-vlm; the VLM settings section is then disabled automatically to prevent ineffective configuration."
+      }
+    },
+    "agent": {
+      "title": "AI agent integration",
+      "b0": "The repository ships a SKILL.md compatible with the agentskills.io standard, so tools that support it — TRAE, Claude Code, Cursor, and more — can load it as a skill in one step:",
+      "b2": "Or call it reliably from any Python script via subprocess — stdout carries only JSON, all logs go to stderr:"
+    },
+    "config": {
+      "title": "Configuration & exit codes",
+      "b0": "Configuration precedence: CLI flags > environment variables > config file (config.example.json) > defaults; the weights field can only be set in the config file.",
+      "b1": {
+        "headers": ["Environment variable", "Description", "Default"],
+        "rows": [
+          ["FLASHGAZE_API_KEY", "VLM API key (not needed in --no-vlm mode)", "—"],
+          ["FLASHGAZE_API_BASE", "API endpoint", "DashScope compatible-mode endpoint"],
+          ["FLASHGAZE_MODEL", "Model name", "qwen-vl-max"],
+          ["FLASHGAZE_VLM_PROVIDER", "Provider: qwen / openai / anthropic / ollama", "qwen"],
+          ["FLASHGAZE_SCENE", "Scene mode", "auto"],
+          ["FLASHGAZE_TIMEOUT", "Request timeout (seconds)", "30"],
+          ["FLASHGAZE_WORKERS", "Concurrent worker threads", "4"],
+          ["FLASHGAZE_MAX_RETRIES", "VLM retry count (timeouts / connection errors only)", "3"],
+          ["FLASHGAZE_VLM_MAX_ADJUSTMENT", "VLM adjustment cap", "10.0"]
+        ]
+      },
+      "b2": {
+        "headers": ["Exit code", "Meaning"],
+        "rows": [
+          ["0", "Success"],
+          ["1", "Invalid arguments"],
+          ["2", "API call failure (reserved — VLM failures already degrade to pure CV)"],
+          ["3", "Invalid directory or no images"],
+          [
+            "4",
+            "Image processing error (reserved — corrupt images already degrade to the error field)"
+          ],
+          ["5", "Export failure"],
+          ["6", "Configuration error (missing API key, etc.)"]
+        ]
+      },
+      "b3": "Exit codes 2 and 4 are reserved: VLM call failures degrade to pure CV (adjustment 0), and corrupt images degrade to that image's error field with score=0 — neither interrupts the batch."
+    },
+    "quality": {
+      "title": "Testing & tech stack",
+      "b0": "The full pytest suite has 1076 cases (1076 passed / 29 skipped, coverage 90.49% ≥ the 80% gate), covering the CV engine, VLM client, hybrid scorer, exporter, CLI parser, end-to-end flows, reproducibility, the configuration layer, and cleanup safety — reproducible, explainable scores are not just a slogan.",
+      "b1": {
+        "headers": ["Dependency", "Purpose"],
+        "rows": [
+          ["Python 3.10+", "Runtime"],
+          [
+            "OpenCV 4.x (headless)",
+            "CV scoring (Laplacian variance, histograms, Otsu thresholding)"
+          ],
+          ["Pillow", "Image-decoding fallback (WebP, corrupt JPEG)"],
+          ["NumPy", "Array operations"],
+          ["requests", "VLM API calls (Qwen-VL / OpenAI-compatible endpoints)"],
+          ["litellm", "Unified multi-VLM calling layer (optional install)"],
+          ["mcp", "MCP Server (optional install)"]
+        ]
+      }
+    }
+  },
+  "nikki-gallery": {
+    "tagline": "A Windows desktop photo-album manager built for Infinity Nikki players — scan, browse, edit, organize, and share in one place, with all data kept local",
+    "overview": {
+      "title": "Overview",
+      "b0": "MeowStarMap (formerly NikkiGallery) is a Windows desktop photo-album manager designed for Infinity Nikki players: it automatically scans game screenshots and recordings, and provides professional image browsing, editing, categorization, and search — covering the full album workflow in one place.",
+      "b1": "All data is stored locally and nothing is uploaded to any cloud — every outfit creation in your album belongs to you alone.",
+      "b2": {
+        "title": "Local-first",
+        "text": "Scan indexes, edit results, and category profiles are all stored in a local SQLite database on your machine — nothing is uploaded to the cloud."
+      }
+    },
+    "features": {
+      "title": "Feature overview",
+      "b0": [
+        {
+          "title": "Smart scanning",
+          "description": "Automatically locates the game directory (Steam / Epic registry + full-disk signature scanning), with incremental scans and concurrent multi-drive processing; intelligently distinguishes three sources: game screenshots, launcher cache, and cloud album."
+        },
+        {
+          "title": "Multi-view gallery",
+          "description": "Five browsing modes — grid, list, masonry, timeline, and event timeline — plus fullscreen viewing and slideshow playback, with Ctrl / Shift multi-select for batch operations."
+        },
+        {
+          "title": "Professional image editing",
+          "description": "14 basic adjustments + independent HSL eight-color grading + multi-channel RGB curves + split toning + filter presets, with full undo / redo and batch application."
+        },
+        {
+          "title": "Video processing",
+          "description": "Thumbnail extraction, video trimming, 0.25x–4x speed control, format conversion, and Apple Live Photo export."
+        },
+        {
+          "title": "Smart organization",
+          "description": "System categories + a three-level custom category tree (drag-to-sort / color labels), tag management, and five smart grouping dimensions (album type / scene / time of day / outfit / type)."
+        },
+        {
+          "title": "Resonance Log (new in 2.5.0)",
+          "description": "Browse and manually backfill gacha records, track wardrobe ownership and outfit collection progress, import/export local JSON, and view personal statistics; gacha and wardrobe data run fully offline."
+        },
+        {
+          "title": "Device sync (new in 2.5.5)",
+          "description": "A built-in NikkiSync protocol v1 server pairs and authenticates over LAN HTTPS + WebSocket so mobile devices can sync directly with the local media library; the \"Sync Gallery\" section is off by default."
+        },
+        {
+          "title": "Duplicate detection",
+          "description": "Dual detection with SHA256 exact comparison + perceptual hashing (pHash), and four-dimension smart scoring to recommend which copy to keep."
+        },
+        {
+          "title": "Sharing & backup",
+          "description": "Clipboard sharing to WeChat / QQ / vivo + WiFi LAN transfer (PIN authentication); automatic scheduled backups plus manual backups, with 5-copy LRU rotation."
+        }
+      ]
+    },
+    "more": {
+      "title": "More capabilities",
+      "b0": "Beyond the core album features, a set of companion capabilities makes long-term use easier:",
+      "b1": [
+        {
+          "title": "12 languages",
+          "description": "Built-in UI in 12 languages (i18next internationalization)."
+        },
+        {
+          "title": "Dual themes",
+          "description": "In addition to the default theme, a \"Soft Pink Luxe\" theme is available."
+        },
+        {
+          "title": "Plugin system",
+          "description": "An open plugin architecture so features can keep growing."
+        },
+        {
+          "title": "Character profiles",
+          "description": "Per-account / UID-isolated character profile management, so assets from different saves never mix."
+        },
+        {
+          "title": "Game parameter decryption",
+          "description": "Built-in game parameter decryption tool."
+        },
+        {
+          "title": "Diagnostics",
+          "description": "Built-in diagnostics give troubleshooting something solid to rely on."
+        }
+      ]
+    },
+    "stack": {
+      "title": "Tech stack",
+      "b0": "A modern desktop combination of Electron + React, with SQLite for local storage and the dual engines of sharp and FFmpeg for image and video processing:",
+      "b1": {
+        "headers": ["Area", "Technology"],
+        "rows": [
+          ["Desktop framework", "Electron 41.10"],
+          ["Frontend framework", "React 19.2 + TypeScript 5.9"],
+          ["State management", "Zustand 5.0"],
+          ["Styling", "Tailwind CSS 3.4"],
+          ["Database", "SQLite (better-sqlite3 12.11)"],
+          ["Image processing", "sharp 0.35"],
+          ["Video processing", "ffmpeg-static + fluent-ffmpeg"],
+          ["Build tool", "Vite 6.4"],
+          ["Animation", "Motion 12.42"],
+          ["Internationalization", "i18next 26.3 + react-i18next 17.0"],
+          ["Full-text search", "FlexSearch 0.8"],
+          ["FFI calls", "koffi 3.1"],
+          ["Validation", "zod 4.4"],
+          ["Testing framework", "Vitest 5.0"]
+        ]
+      }
+    },
+    "download": {
+      "title": "Download & install",
+      "b0": [
+        {
+          "title": "GitHub Releases",
+          "text": "Go to the Releases page to download the latest installer."
+        },
+        {
+          "title": "Other channels",
+          "text": "Search \"纤璐不会玩摄影\" on Douyin / Bilibili for download instructions."
+        }
+      ],
+      "b1": {
+        "title": "System requirements",
+        "text": "Windows 10 (1803 or later) / Windows 11, x64 architecture."
+      }
+    },
+    "dev": {
+      "title": "Developer guide",
+      "b0": "Prerequisite: Node.js ≥ 22.12.0. Clone the repository and run the full desktop app locally:",
+      "b2": {
+        "headers": ["Common command", "Purpose"],
+        "rows": [
+          ["npm run test", "Run tests"],
+          ["npm run lint", "Lint the code"],
+          ["npm run typecheck", "Type-check"],
+          ["npm run format", "Format the code"],
+          ["npm run storybook", "Start the component docs site (Storybook, port 6006)"]
+        ]
+      },
+      "b3": "Repository layout at a glance (see ARCHITECTURE.md for the full architecture description):"
+    },
+    "docs": {
+      "title": "Documentation",
+      "b0": "For a deeper dive into the architecture, contributing, or self-service troubleshooting, the repository includes a full set of docs:",
+      "b1": [
+        {
+          "label": "ARCHITECTURE.md",
+          "description": "Architecture design document (Chinese)"
+        },
+        {
+          "label": "ARCHITECTURE.en.md",
+          "description": "Architecture design document (English)"
+        },
+        {
+          "label": "DEVELOPMENT.md",
+          "description": "Development guide (Chinese)"
+        },
+        {
+          "label": "DEVELOPMENT.en.md",
+          "description": "Development guide (English)"
+        },
+        {
+          "label": "CHANGELOG.md",
+          "description": "Changelog"
+        },
+        {
+          "label": "docs/",
+          "description": "IPC contracts, plugin API, troubleshooting manual, and more"
+        },
+        {
+          "label": "docs/tutorial/用户使用教程.md",
+          "description": "Illustrated user tutorial for players"
+        },
+        {
+          "label": "docs/Storybook使用指南.md",
+          "description": "Component docs site guide (npm run storybook, port 6006)"
+        }
+      ]
+    }
+  }
+}

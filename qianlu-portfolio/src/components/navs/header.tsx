@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 import GlassSurface from '@/components/glass/GlassSurface';
 import ThemeToggle from '@/components/theme-toggle';
 import SettingsPanel from '@/components/settings/SettingsPanel';
+import LanguageSwitcher, { LanguagePills } from '@/components/navs/language-switcher';
 import { FOCUS_RING_CLASS, PRESS_CLASS, useKbPressProps } from '@/lib/press';
 import { cn } from '@/lib/utils';
 
@@ -13,11 +15,11 @@ import { cn } from '@/lib/utils';
 const SCROLL_THRESHOLD = 80;
 
 const NAV_ITEMS = [
-  { href: '#home', label: '首页' },
-  { href: '#tools', label: '开源工具' },
-  { href: '#journey', label: '摄影之路' },
-  { href: '#gallery', label: '作品集' },
-  { href: '#about', label: '关于' },
+  { href: '#home', label: 'nav.home' },
+  { href: '#tools', label: 'nav.tools' },
+  { href: '#journey', label: 'nav.journey' },
+  { href: '#gallery', label: 'nav.gallery' },
+  { href: '#about', label: 'nav.about' },
 ] as const;
 
 export default function Header() {
@@ -31,6 +33,7 @@ export default function Header() {
   const overHero = isHome && !isScrolled;
   // 键盘按下镜像：处理器按 currentTarget 生效，整组按钮共用一份
   const kb = useKbPressProps();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const syncScrolled = () => {
@@ -84,7 +87,7 @@ export default function Header() {
             FOCUS_RING_CLASS
           )}
         >
-          {item.label}
+          {t(item.label)}
         </button>
       ))}
     </nav>
@@ -131,12 +134,13 @@ export default function Header() {
 
           <div className="flex items-center gap-1">
             <ThemeToggle />
+            <LanguageSwitcher />
             <SettingsPanel />
             <Button
               className="text-ink/70 hover:bg-ink/5 hover:text-ink bg-transparent md:hidden"
               size="icon"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label={isMenuOpen ? '关闭菜单' : '打开菜单'}
+              aria-label={isMenuOpen ? t('nav.closeMenu') : t('nav.openMenu')}
               aria-expanded={isMenuOpen}
             >
               {isMenuOpen ? <X /> : <Menu />}
@@ -153,14 +157,17 @@ export default function Header() {
                 onClick={() => scrollToSection(item.href)}
                 {...kb}
                 className={cn(
-                  'rounded-btn text-ink/80 hover:bg-ink/5 hover:text-clay block w-full cursor-pointer px-3 py-2.5 text-left text-sm font-medium transition-colors',
+                  'rounded-btn text-ink/80 hover:bg-ink/5 hover:text-clay block w-full cursor-pointer px-3 py-2.5 text-start text-sm font-medium transition-colors',
                   PRESS_CLASS,
                   FOCUS_RING_CLASS
                 )}
               >
-                {item.label}
+                {t(item.label)}
               </button>
             ))}
+            <div className="border-hairline mt-1 border-t pt-1">
+              <LanguagePills onSelect={() => setIsMenuOpen(false)} />
+            </div>
           </nav>
         )}
       </div>

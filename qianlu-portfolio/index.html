@@ -51,6 +51,32 @@
         var next = Object.prototype.hasOwnProperty.call(valid, palette) ? palette : 'air';
         document.documentElement.classList.add('palette-' + next);
       })();
+
+      // 防 FOUC：首帧前确定语言与书写方向，避免阿拉伯语刷新时 RTL 布局闪烁。
+      // 白名单与检测顺序与 src/lib/i18n.ts 保持一致。
+      (function () {
+        var valid = { zh: 1, en: 1, fr: 1, ru: 1, es: 1, ar: 1 };
+        var lang = null;
+        try {
+          lang = localStorage.getItem('qianlu.lang');
+        } catch (e) {
+          /* localStorage 不可用时走浏览器语言检测 */
+        }
+        if (!lang || !Object.prototype.hasOwnProperty.call(valid, lang)) {
+          lang = null;
+          var preferred = navigator.languages || [navigator.language || 'zh'];
+          for (var i = 0; i < preferred.length; i++) {
+            var prefix = String(preferred[i]).slice(0, 2).toLowerCase();
+            if (Object.prototype.hasOwnProperty.call(valid, prefix)) {
+              lang = prefix;
+              break;
+            }
+          }
+          if (!lang) lang = 'zh';
+        }
+        document.documentElement.lang = lang === 'zh' ? 'zh-CN' : lang;
+        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+      })();
     </script>
   </head>
   <body>

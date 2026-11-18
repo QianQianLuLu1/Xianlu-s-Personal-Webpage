@@ -389,6 +389,17 @@ html.dark.palette-deep {
   .dark {
     color-scheme: dark;
   }
+
+  /* 阿拉伯语：Noto Sans Arabic 优先；负字距会破坏字母连写，全局归零 */
+  html[lang='ar'] {
+    --font-sans:
+      'Noto Sans Arabic Variable', 'Noto Sans Arabic', 'Inter Variable', 'Segoe UI', Tahoma,
+      sans-serif;
+  }
+
+  html[lang='ar'] * {
+    letter-spacing: 0 !important;
+  }
 }
 
 /*

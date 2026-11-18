@@ -34,7 +34,7 @@ function toProject(gen: GeneratedProject, copy?: ProjectDetail): Project {
     tech: '',
     platform: null,
     repoUrl: gen.repoUrl,
-    downloads: gen.release ? [{ label: 'Github 下载', url: gen.release.url }] : undefined,
+    downloads: gen.release ? [{ channel: 'github', url: gen.release.url }] : undefined,
     cover:
       REPO_TO_ROUTE[gen.id] === 'nikki-gallery'
         ? '/projects/nikki-cover.webp'
@@ -53,7 +53,10 @@ function merge(
   return Object.entries(PROJECT_DETAILS).map(([routeId, copy]) => {
     const repoId = ROUTE_TO_REPO[routeId as ProjectId] ?? routeId;
     const gen = generatedById.get(repoId) ?? fallbackById.get(repoId);
-    if (!gen) throw new Error(`项目数据缺失：${routeId}（同步与兜底均无该条目）`);
+    if (!gen)
+      throw new Error(
+        `Missing project data: ${routeId} (neither synced nor fallback entry exists)`
+      );
     return toProject(gen, copy);
   });
 }

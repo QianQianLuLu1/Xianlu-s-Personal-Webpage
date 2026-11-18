@@ -1,0 +1,63 @@
+{
+  "trigger": {
+    "open": "Open settings",
+    "title": "Settings"
+  },
+  "title": "Settings",
+  "description": "All changes take effect immediately and are saved in this browser.",
+  "storageWarning": "This browser can't save data (private mode, etc.), so settings will only apply to this session.",
+  "mode": {
+    "legend": "Performance mode",
+    "auto": { "label": "Auto", "hint": "Chosen automatically based on device performance" },
+    "full": { "label": "Full effects", "hint": "All animations and strong glass refraction" },
+    "compat": {
+      "label": "Compatibility mode",
+      "hint": "Disables costly effects, prioritizes smoothness"
+    }
+  },
+  "resolution": {
+    "legend": "Asset resolution",
+    "auto": { "label": "Auto", "hint": "Based on the screen's physical pixels" },
+    "2k": { "label": "2K", "hint": "2560 wide, smaller images on average" },
+    "4k": { "label": "4K", "hint": "3840 wide, maximum detail" }
+  },
+  "fps": {
+    "legend": "Target frame rate",
+    "note": "If your display's refresh rate is lower than the selected tier, it will still run at the display's rate."
+  },
+  "theme": {
+    "legend": "Dark mode",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "palette": {
+    "legend": "Palette personality",
+    "air": {
+      "label": "Featherlight",
+      "hint": "Light gray neutrals, the most restrained daily look"
+    },
+    "vivid": { "label": "High Voltage", "hint": "Clashing colors on black, high contrast" },
+    "spectrum": { "label": "Prism Glow", "hint": "Soft purple-blue-green gradients" },
+    "deep": { "label": "Deep Current", "hint": "Deep-sea blue tech vibe" },
+    "note": "Palette personality instantly changes accent colors, section gradients, and the footer; “High Voltage” keeps a fixed black background in both light and dark modes."
+  },
+  "status": {
+    "title": "Current status",
+    "redetect": "Re-detect",
+    "detecting": "Detecting…",
+    "tier": "Current performance tier",
+    "suggestion": "Detection suggestion",
+    "fps": "Live frame rate",
+    "refreshRate": "Display refresh rate",
+    "resolution": "Loaded resolution",
+    "browser": "Browser & platform",
+    "autoSuffix": " (auto)",
+    "manualSuffix": " (manual)",
+    "notDetected": "Not detected",
+    "unknown": "Unknown",
+    "res4k": "4K tier",
+    "res2k": "2K tier",
+    "unknownBrowser": "Unknown browser",
+    "unknownOs": "Unknown OS"
+  }
+}

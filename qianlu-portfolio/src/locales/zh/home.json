@@ -1,0 +1,90 @@
+{
+  "hero": {
+    "badge": "全网同名",
+    "tagline1": "在搭配师的世界里，顺手把计算机调教明白",
+    "tagline2": "消解「暖暖玩家」与「不懂计算机」之间的刻板等号",
+    "ctaTools": "浏览开源工具",
+    "ctaGallery": "查看摄影作品"
+  },
+  "projects": {
+    "title": "开源工具",
+    "lead": "把「暖暖玩家」和「不懂计算机」之间的等号，一点点擦掉",
+    "emptyTitle": "开源工具整理中",
+    "emptyDesc": "工具列表暂时空着，可能正在准备上架，稍后再来看看。",
+    "viewDetail": "查看详情",
+    "download": "下载",
+    "viewDetailAria": "查看 {{name}} 详情",
+    "downloadAria": "下载 {{name}}",
+    "coverAlt": "{{name}} 封面",
+    "downloadChannel": {
+      "thunder": "迅雷下载",
+      "baidu": "百度下载",
+      "github": "Github 下载",
+      "qq": "QQ 下载"
+    }
+  },
+  "journey": {
+    "title": "摄影之路",
+    "lead": "从摸清手里的设备，到拍出认得出是自己拍的片子",
+    "emptyTitle": "摄影之路筹备中",
+    "emptyDesc": "阶段内容暂未就位，稍后再来看看。",
+    "stages": {
+      "gear": {
+        "title": "设备",
+        "description": "从手机随手拍，到摸清相机里每一项参数。先熟悉手里的工具，再谈怎么创作。",
+        "photoAlt": "冷蓝调咖啡店里低头操作平板核对参数，身后是美人鱼墙绘"
+      },
+      "composition": {
+        "title": "构图",
+        "description": "学会取舍比学会堆砌更重要。把画面里的杂音一点点拿掉，主体自己就站住了。",
+        "photoAlt": "仰拍粉紫色居民楼的一角与蓝天里的一朵云，大面积留白"
+      },
+      "light": {
+        "title": "光影",
+        "description": "开始追着光走。清晨、黄昏、深夜的街灯，同一处场景在不同光线下判若两地。",
+        "photoAlt": "夜幕下的满月低悬在陆家嘴楼群前，江面映着成片红色灯火"
+      },
+      "style": {
+        "title": "风格",
+        "description": "不再照搬别人的调色，慢慢能一眼认出自己的片子——这大概是风格开始的信号。",
+        "photoAlt": "夜色草场上的白色帐篷与暖色串灯，烟雾在压暗的天空下翻涌"
+      }
+    }
+  },
+  "gallery": {
+    "title": "作品集",
+    "lead": "<num/> 张照片，记录光、街区与那些还没想好标题的瞬间",
+    "emptyTitle": "照片还没就位",
+    "emptyDesc": "作品暂时没有加载出来，可能是网络波动，稍等片刻或刷新重试。",
+    "cardAria": "查看作品 {{title}}",
+    "modalTitle": "作品 {{title}}",
+    "modalDesc": "第 {{current}} 张，共 {{total}} 张。可使用左右方向键切换。",
+    "prev": "上一张",
+    "next": "下一张"
+  },
+  "about": {
+    "title": "关于",
+    "lead": "消解「暖暖玩家」与「不懂计算机」之间的刻板等号",
+    "whoTitle": "我是谁",
+    "bio1": "我是纤璐，全网同名「<brand/>」——一个用镜头收藏温度、用代码整理灵感的独立创作者。平时拍照，也写代码。",
+    "bio2": "在搭配师的世界里做轻量计算机科普：把无限暖暖的画质、帧率、闪退这些事，拆成一步步能照着做的设置，发在 B 站、小红书等平台。",
+    "bio3": "后来干脆把经验做成了开源工具：Nikki Gallery 替玩家把散落的游戏截图与录像管成一本本地相册，FlashGaze 用 AI 在本机批量给照片打分——与其每次都从头教一遍，不如让它们自己跑起来。",
+    "doingTitle": "在做的事",
+    "interests": {
+      "portrait": "人像摄影",
+      "night": "夜景",
+      "nikki": "无限暖暖",
+      "pc": "PC 画质与帧率优化",
+      "tools": "开源工具",
+      "cs": "计算机科普"
+    },
+    "socialTitle": "全网同名：纤璐不会玩摄影",
+    "socialSub": "在下面这些地方也能找到我"
+  },
+  "social": {
+    "douyin": "抖音",
+    "bilibili": "哔哩哔哩",
+    "xiaohongshu": "小红书",
+    "qq": "QQ"
+  }
+}

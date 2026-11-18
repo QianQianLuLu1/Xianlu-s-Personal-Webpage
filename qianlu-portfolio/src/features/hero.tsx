@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { ArrowDown, ImageDown } from 'lucide-react';
 
 import SpotlightCanvas from '@/components/canvas/SpotlightCanvas';
@@ -23,6 +24,7 @@ function scrollToSection(href: string) {
 }
 
 export default function Hero() {
+  const { t } = useTranslation('home');
   const motionTier = useMotionTier();
   const { effectiveMode } = useAppConfig();
   const kb = useKbPressProps();
@@ -118,7 +120,7 @@ export default function Hero() {
         <div className="mx-auto max-w-3xl text-center">
           <motion.div {...enter(0)}>
             <Badge variant="secondary" className="bg-clay/10 text-clay mb-8">
-              全网同名
+              {t('hero.badge')}
             </Badge>
           </motion.div>
 
@@ -130,14 +132,14 @@ export default function Hero() {
           </motion.h1>
 
           <motion.p {...enter(0.2)} className="text-ink/85 text-lead mb-5 font-medium text-balance">
-            在搭配师的世界里，顺手把计算机调教明白
+            {t('hero.tagline1')}
           </motion.p>
 
           <motion.p
             {...enter(0.3)}
             className="text-ink/70 mx-auto mb-12 max-w-2xl text-base leading-relaxed text-balance sm:text-lg"
           >
-            消解「暖暖玩家」与「不懂计算机」之间的刻板等号
+            {t('hero.tagline2')}
           </motion.p>
 
           <motion.div
@@ -152,7 +154,7 @@ export default function Hero() {
             className="mb-14 flex flex-col justify-center gap-3 sm:flex-row sm:gap-4"
           >
             <Button size="lg" onClick={() => scrollToSection('#tools')}>
-              浏览开源工具
+              {t('hero.ctaTools')}
               <ArrowDown />
             </Button>
             <Button
@@ -162,7 +164,7 @@ export default function Hero() {
               className="border-ink/40 text-ink hover:bg-ink/5 hover:text-ink bg-transparent"
             >
               <ImageDown />
-              查看摄影作品
+              {t('hero.ctaGallery')}
             </Button>
           </motion.div>
 
@@ -175,8 +177,8 @@ export default function Hero() {
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  title={link.label}
-                  aria-label={link.label}
+                  title={t(link.label)}
+                  aria-label={t(link.label)}
                   {...kb}
                   className={cn(
                     'text-ink/70 hover:bg-ink/5 hover:text-clay rounded-full p-3 transition-colors',

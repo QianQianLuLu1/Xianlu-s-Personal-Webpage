@@ -1,3 +1,5 @@
+import { Trans, useTranslation } from 'react-i18next';
+
 import { SOCIAL_ICONS } from '@/components/icons/social-icon-map';
 import { FOCUS_RING_CLASS, PRESS_CLASS, useKbPressProps } from '@/lib/press';
 import { cn } from '@/lib/utils';
@@ -6,6 +8,7 @@ import { SOCIAL_LINKS } from '@/data/social';
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const kb = useKbPressProps();
+  const { t } = useTranslation();
 
   return (
     <footer className="site-footer border-hairline border-t py-14">
@@ -16,14 +19,15 @@ export default function Footer() {
           <div className="flex items-center gap-1">
             {SOCIAL_LINKS.map((link) => {
               const Icon = SOCIAL_ICONS[link.id];
+              const label = t(link.label, { ns: 'home' });
               return (
                 <a
                   key={link.id}
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  title={link.label}
-                  aria-label={link.label}
+                  title={label}
+                  aria-label={label}
                   {...kb}
                   className={cn(
                     'footer-muted hover:bg-ink/5 hover:text-clay rounded-full p-2 transition-colors',
@@ -37,19 +41,22 @@ export default function Footer() {
             })}
           </div>
 
-          <p className="footer-muted text-sm">© {currentYear} QianLu · 以 MIT 协议开源</p>
+          <p className="footer-muted text-sm">{t('footer.copyright', { year: currentYear })}</p>
 
           <p className="footer-muted text-xs">
-            基于{' '}
-            <a
-              href="https://github.com/geekpius/portfolio"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-clay focus-visible:ring-ring focus-visible:ring-offset-cream underline transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-            >
-              geekpius/portfolio
-            </a>{' '}
-            (MIT) 二次开发
+            <Trans
+              i18nKey="footer.attribution"
+              components={{
+                1: (
+                  <a
+                    href="https://github.com/geekpius/portfolio"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-clay focus-visible:ring-ring focus-visible:ring-offset-cream underline transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                  />
+                ),
+              }}
+            />
           </p>
         </div>
       </div>

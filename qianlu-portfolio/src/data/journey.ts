@@ -2,7 +2,7 @@
  * 摄影之路的四个阶段。
  *
  * 顺序固定为：设备 → 构图 → 光影 → 风格，阶段数为编译期常量。
- * 每阶段描述控制在 30~60 字。
+ * title/description/photoAlt 为 i18n key（home 命名空间），文案见 locales，描述控制在 30~60 字。
  */
 
 export interface JourneyStage {
@@ -20,33 +20,33 @@ export const JOURNEY_STAGES: readonly JourneyStage[] = [
   {
     id: 'gear',
     order: 1,
-    title: '设备',
-    description: '从手机随手拍，到摸清相机里每一项参数。先熟悉手里的工具，再谈怎么创作。',
+    title: 'journey.stages.gear.title',
+    description: 'journey.stages.gear.description',
     photoId: 'photo-09',
-    photoAlt: '冷蓝调咖啡店里低头操作平板核对参数，身后是美人鱼墙绘',
+    photoAlt: 'journey.stages.gear.photoAlt',
   },
   {
     id: 'composition',
     order: 2,
-    title: '构图',
-    description: '学会取舍比学会堆砌更重要。把画面里的杂音一点点拿掉，主体自己就站住了。',
+    title: 'journey.stages.composition.title',
+    description: 'journey.stages.composition.description',
     photoId: 'photo-10',
-    photoAlt: '仰拍粉紫色居民楼的一角与蓝天里的一朵云，大面积留白',
+    photoAlt: 'journey.stages.composition.photoAlt',
   },
   {
     id: 'light',
     order: 3,
-    title: '光影',
-    description: '开始追着光走。清晨、黄昏、深夜的街灯，同一处场景在不同光线下判若两地。',
+    title: 'journey.stages.light.title',
+    description: 'journey.stages.light.description',
     photoId: 'photo-20',
-    photoAlt: '夜幕下的满月低悬在陆家嘴楼群前，江面映着成片红色灯火',
+    photoAlt: 'journey.stages.light.photoAlt',
   },
   {
     id: 'style',
     order: 4,
-    title: '风格',
-    description: '不再照搬别人的调色，慢慢能一眼认出自己的片子——这大概是风格开始的信号。',
+    title: 'journey.stages.style.title',
+    description: 'journey.stages.style.description',
     photoId: 'photo-04',
-    photoAlt: '夜色草场上的白色帐篷与暖色串灯，烟雾在压暗的天空下翻涌',
+    photoAlt: 'journey.stages.style.photoAlt',
   },
 ] as const;

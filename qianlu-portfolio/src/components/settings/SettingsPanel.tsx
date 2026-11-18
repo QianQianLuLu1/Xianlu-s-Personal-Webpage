@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Gauge, RefreshCw } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -17,31 +18,18 @@ import { clearDetectionCache, getCachedDetection, runDetection } from '@/lib/per
 import { FPS_CHOICES, updateConfig, isStorageUsable, type PaletteSetting } from '@/lib/settings';
 import { cn } from '@/lib/utils';
 
-const MODE_OPTIONS = [
-  { value: 'auto', label: '自动', hint: '按设备性能检测自动选择' },
-  { value: 'full', label: '完整动效', hint: '全部动效与玻璃折射强档' },
-  { value: 'compat', label: '兼容模式', hint: '关闭高开销动效，优先流畅度' },
-] as const;
+const MODE_OPTIONS = [{ value: 'auto' }, { value: 'full' }, { value: 'compat' }] as const;
 
-const RESOLUTION_OPTIONS = [
-  { value: 'auto', label: '自动', hint: '按屏幕物理像素判定' },
-  { value: '2k', label: '2K', hint: '2560 宽，平均单图更小' },
-  { value: '4k', label: '4K', hint: '3840 宽，细节最全' },
-] as const;
+const RESOLUTION_OPTIONS = [{ value: 'auto' }, { value: '2k' }, { value: '4k' }] as const;
 
 const PALETTE_OPTIONS = [
-  { value: 'air', label: '极致轻薄', hint: '浅灰中性，日常最克制' },
-  { value: 'vivid', label: '高能猛进', hint: '黑底撞色，强对比' },
-  { value: 'spectrum', label: '神通妙彩', hint: '紫蓝绿柔渐变' },
-  { value: 'deep', label: '超拉风', hint: '深海蓝科技感' },
+  { value: 'air' },
+  { value: 'vivid' },
+  { value: 'spectrum' },
+  { value: 'deep' },
 ] as const;
 
-const MODE_LABEL: Record<string, string> = {
-  full: '完整动效',
-  compat: '兼容模式',
-};
-
-function describeBrowser(): string {
+function describeBrowser(t: (key: string) => string): string {
   if (typeof navigator === 'undefined') return '—';
   const ua = navigator.userAgent;
   const browser = /Edg\//.test(ua)
@@ -54,7 +42,7 @@ function describeBrowser(): string {
           ? 'Chrome'
           : /Safari\//.test(ua)
             ? 'Safari'
-            : '未知浏览器';
+            : t('status.unknownBrowser');
   const os = /Windows/.test(ua)
     ? 'Windows'
     : /Mac OS/.test(ua)
@@ -65,7 +53,7 @@ function describeBrowser(): string {
           ? 'iOS'
           : /Linux/.test(ua)
             ? 'Linux'
-            : '未知系统';
+            : t('status.unknownOs');
   return `${browser} · ${os}`;
 }
 
@@ -150,6 +138,7 @@ export default function SettingsPanel({
   triggerClassName?: string;
 }) {
   const config = useAppConfig();
+  const { t } = useTranslation('settings');
   const { theme, setTheme } = useTheme();
   const [detecting, setDetecting] = useState(false);
   const storageUsable = isStorageUsable();
@@ -176,8 +165,8 @@ export default function SettingsPanel({
           variant="ghost"
           size="icon"
           className={triggerClassName}
-          aria-label="打开设置"
-          title="设置"
+          aria-label={t('trigger.open')}
+          title={t('trigger.title')}
         >
           <Gauge />
         </Button>
@@ -185,34 +174,42 @@ export default function SettingsPanel({
 
       <DialogContent className="max-h-[92vh] gap-5 overflow-y-auto sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>设置</DialogTitle>
-          <DialogDescription>所有更改立即生效，并保存在本机浏览器中。</DialogDescription>
+          <DialogTitle>{t('title')}</DialogTitle>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
 
         {!storageUsable && (
           <p className="rounded-btn border-clay/40 bg-clay/5 text-clay border px-3 py-2 text-xs">
-            当前浏览器环境无法保存（隐私模式等），设置将仅在本会话生效。
+            {t('storageWarning')}
           </p>
         )}
 
         <OptionRow
-          legend="性能模式"
+          legend={t('mode.legend')}
           name="mode"
           value={config.mode}
-          options={MODE_OPTIONS}
+          options={MODE_OPTIONS.map((option) => ({
+            value: option.value,
+            label: t(`mode.${option.value}.label`),
+            hint: t(`mode.${option.value}.hint`),
+          }))}
           onChange={(value) => updateConfig({ mode: value as typeof config.mode })}
         />
 
         <OptionRow
-          legend="资源分辨率"
+          legend={t('resolution.legend')}
           name="resolution"
           value={config.resolution}
-          options={RESOLUTION_OPTIONS}
+          options={RESOLUTION_OPTIONS.map((option) => ({
+            value: option.value,
+            label: t(`resolution.${option.value}.label`),
+            hint: t(`resolution.${option.value}.hint`),
+          }))}
           onChange={(value) => updateConfig({ resolution: value as typeof config.resolution })}
         />
 
         <fieldset>
-          <legend className="text-ink mb-2 text-sm font-semibold">目标帧率</legend>
+          <legend className="text-ink mb-2 text-sm font-semibold">{t('fps.legend')}</legend>
           <RadioGroup
             name="fps"
             value={String(config.fps)}
@@ -235,25 +232,18 @@ export default function SettingsPanel({
               </label>
             ))}
           </RadioGroup>
-          <p className="text-ink/65 mt-1.5 text-xs">
-            若显示器刷新率低于所选档位，实际仍以显示器频率运行。
-          </p>
+          <p className="text-ink/65 mt-1.5 text-xs">{t('fps.note')}</p>
         </fieldset>
 
         <fieldset>
-          <legend className="text-ink mb-2 text-sm font-semibold">深色模式</legend>
+          <legend className="text-ink mb-2 text-sm font-semibold">{t('theme.legend')}</legend>
           <RadioGroup
             name="theme"
             value={theme}
             onValueChange={(value) => setTheme(value as Theme)}
             className="grid grid-cols-2 gap-2"
           >
-            {(
-              [
-                { value: 'light', label: '浅色' },
-                { value: 'dark', label: '深色' },
-              ] as const
-            ).map((option) => (
+            {([{ value: 'light' }, { value: 'dark' }] as const).map((option) => (
               <label
                 key={option.value}
                 className={cn(
@@ -265,28 +255,30 @@ export default function SettingsPanel({
                 )}
               >
                 <RadioGroupItem value={option.value} />
-                <span className="text-ink text-sm font-medium">{option.label}</span>
+                <span className="text-ink text-sm font-medium">{t(`theme.${option.value}`)}</span>
               </label>
             ))}
           </RadioGroup>
         </fieldset>
 
         <OptionRow
-          legend="配色性格"
+          legend={t('palette.legend')}
           name="palette"
           value={config.palette}
-          options={PALETTE_OPTIONS}
+          options={PALETTE_OPTIONS.map((option) => ({
+            value: option.value,
+            label: t(`palette.${option.value}.label`),
+            hint: t(`palette.${option.value}.hint`),
+          }))}
           columns={2}
           swatch
           onChange={(value) => updateConfig({ palette: value as PaletteSetting })}
         />
-        <p className="text-ink/65 -mt-2 text-xs">
-          配色性格会即时改变强调色、区块渐变与页脚；「高能猛进」为固定黑底，深浅模式观感一致。
-        </p>
+        <p className="text-ink/65 -mt-2 text-xs">{t('palette.note')}</p>
 
         <div>
           <div className="mb-2 flex items-center justify-between">
-            <h3 className="text-ink text-sm font-semibold">当前状态</h3>
+            <h3 className="text-ink text-sm font-semibold">{t('status.title')}</h3>
             <Button
               variant="ghost"
               size="sm"
@@ -295,25 +287,25 @@ export default function SettingsPanel({
               className="h-7 gap-1 px-2 text-xs"
             >
               <RefreshCw className={cn('size-3', detecting && 'animate-spin')} />
-              {detecting ? '检测中…' : '重新检测'}
+              {detecting ? t('status.detecting') : t('status.redetect')}
             </Button>
           </div>
           <dl className="divide-hairline rounded-card border-hairline divide-y border px-4 py-1">
-            <StatusRow term="当前性能档位">
-              {MODE_LABEL[config.effectiveMode]}
-              {config.mode === 'auto' ? '（自动）' : '（手动）'}
+            <StatusRow term={t('status.tier')}>
+              {t(`mode.${config.effectiveMode}.label`)}
+              {config.mode === 'auto' ? t('status.autoSuffix') : t('status.manualSuffix')}
             </StatusRow>
-            <StatusRow term="检测建议">
-              {detection ? MODE_LABEL[detection.suggested] : '未检测'}
+            <StatusRow term={t('status.suggestion')}>
+              {detection ? t(`mode.${detection.suggested}.label`) : t('status.notDetected')}
             </StatusRow>
-            <StatusRow term="实时帧率">{config.rollingFps ?? '—'}</StatusRow>
-            <StatusRow term="显示器刷新率">
-              {config.actualScreenHz ? `${config.actualScreenHz} Hz` : '未知'}
+            <StatusRow term={t('status.fps')}>{config.rollingFps ?? '—'}</StatusRow>
+            <StatusRow term={t('status.refreshRate')}>
+              {config.actualScreenHz ? `${config.actualScreenHz} Hz` : t('status.unknown')}
             </StatusRow>
-            <StatusRow term="当前加载分辨率">
-              {config.effectiveResolution === '4k' ? '4K 档' : '2K 档'}
+            <StatusRow term={t('status.resolution')}>
+              {config.effectiveResolution === '4k' ? t('status.res4k') : t('status.res2k')}
             </StatusRow>
-            <StatusRow term="浏览器与平台">{describeBrowser()}</StatusRow>
+            <StatusRow term={t('status.browser')}>{describeBrowser(t)}</StatusRow>
           </dl>
         </div>
       </DialogContent>

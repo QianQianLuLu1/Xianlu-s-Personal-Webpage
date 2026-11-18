@@ -1,0 +1,90 @@
+{
+  "hero": {
+    "badge": "Mismo nombre en todas partes",
+    "tagline1": "En el mundo de las estilistas, domando la informática de paso",
+    "tagline2": "Rompiendo el estereotipo que equipara a los jugadores de Infinity Nikki con no saber de informática",
+    "ctaTools": "Explorar herramientas de código abierto",
+    "ctaGallery": "Ver mis fotografías"
+  },
+  "projects": {
+    "title": "Herramientas de código abierto",
+    "lead": "Borrando, poco a poco, el signo de igualdad entre «jugadores de Infinity Nikki» y «no saber de informática»",
+    "emptyTitle": "Organizando las herramientas",
+    "emptyDesc": "La lista de herramientas está vacía por ahora; puede que haya nuevos lanzamientos en camino. Vuelve a mirar más tarde.",
+    "viewDetail": "Ver detalles",
+    "download": "Descargar",
+    "viewDetailAria": "Ver detalles de {{name}}",
+    "downloadAria": "Descargar {{name}}",
+    "coverAlt": "Portada de {{name}}",
+    "downloadChannel": {
+      "thunder": "Descarga por Thunder",
+      "baidu": "Descarga por Baidu",
+      "github": "Descarga por GitHub",
+      "qq": "Descarga por QQ"
+    }
+  },
+  "journey": {
+    "title": "Camino fotográfico",
+    "lead": "De entender el equipo que tengo en las manos a lograr fotos que se reconozcan como mías",
+    "emptyTitle": "El camino fotográfico está en preparación",
+    "emptyDesc": "El contenido de las etapas aún no está listo. Vuelve a mirar más tarde.",
+    "stages": {
+      "gear": {
+        "title": "Equipo",
+        "description": "De fotos casuales con el móvil a dominar cada parámetro de la cámara. Primero conocer las herramientas que tienes, después hablar de crear.",
+        "photoAlt": "Consultando parámetros en una tablet en una cafetería de tonos azul frío, con un mural de sirena en la pared detrás"
+      },
+      "composition": {
+        "title": "Composición",
+        "description": "Aprender a descartar importa más que aprender a acumular. Quita el ruido visual poco a poco y el sujeto se sostiene solo.",
+        "photoAlt": "Contrapicado de la esquina de un edificio residencial rosa violáceo con una sola nube en el cielo azul y amplio espacio negativo"
+      },
+      "light": {
+        "title": "Luz",
+        "description": "Empezar a perseguir la luz. Amanecer, atardecer, farolas de madrugada: la misma escena parece otro lugar bajo otra luz.",
+        "photoAlt": "Luna llena suspendida baja sobre los edificios de Lujiazui de noche, con luces rojas reflejadas en el río"
+      },
+      "style": {
+        "title": "Estilo",
+        "description": "Ya no copio el etalonaje de otros: poco a poco reconozco mis propias fotos de un vistazo. Esa es quizá la señal de que empieza un estilo.",
+        "photoAlt": "Tienda blanca con guirnaldas de luces cálidas en una pradera nocturna, humo ondulante bajo un cielo oscurecido"
+      }
+    }
+  },
+  "gallery": {
+    "title": "Portafolio",
+    "lead": "<num/> fotos que registran la luz, los barrios y esos instantes que aún no tienen título",
+    "emptyTitle": "Las fotos aún no están listas",
+    "emptyDesc": "Las obras no se cargaron, quizá por un problema de red. Espera un momento o recarga para reintentar.",
+    "cardAria": "Ver la obra {{title}}",
+    "modalTitle": "Obra {{title}}",
+    "modalDesc": "Foto {{current}} de {{total}}. Usa las flechas izquierda y derecha para navegar.",
+    "prev": "Foto anterior",
+    "next": "Foto siguiente"
+  },
+  "about": {
+    "title": "Acerca de",
+    "lead": "Rompiendo el estereotipo que equipara a los jugadores de Infinity Nikki con no saber de informática",
+    "whoTitle": "Quién soy",
+    "bio1": "Soy QianLu, con el mismo nombre en todas partes: «<brand/>», una creadora independiente que colecciona calidez con la cámara y ordena la inspiración con código. Hago fotos y también escribo código.",
+    "bio2": "Hago divulgación informática ligera para el mundo de las estilistas: convierto la calidad gráfica, la tasa de fotogramas y los cierres inesperados de Infinity Nikki en ajustes paso a paso que cualquiera puede seguir, publicados en Bilibili, Xiaohongshu y otras plataformas.",
+    "bio3": "Al final convertí esa experiencia en herramientas de código abierto: Nikki Gallery organiza las capturas y grabaciones dispersas de los jugadores en un álbum local, y FlashGaze usa IA para puntuar fotos por lotes en tu propia máquina. En vez de enseñarlo todo desde cero cada vez, dejo que las herramientas funcionen solas.",
+    "doingTitle": "En lo que trabajo",
+    "interests": {
+      "portrait": "Fotografía de retrato",
+      "night": "Escenas nocturnas",
+      "nikki": "Infinity Nikki",
+      "pc": "Optimización de gráficos y tasa de fotogramas en PC",
+      "tools": "Herramientas de código abierto",
+      "cs": "Divulgación informática"
+    },
+    "socialTitle": "Mismo nombre en todas partes: 纤璐不会玩摄影",
+    "socialSub": "También puedes encontrarme aquí"
+  },
+  "social": {
+    "douyin": "Douyin",
+    "bilibili": "Bilibili",
+    "xiaohongshu": "Xiaohongshu",
+    "qq": "QQ"
+  }
+}

@@ -19,6 +19,8 @@ import { PROJECTS } from '@/lib/projects-merge';
 
 export { PROJECTS };
 
+export type DownloadChannel = 'thunder' | 'baidu' | 'github' | 'qq';
+
 export interface Project {
   /** 站内路由 id（稳定，不随仓库改名变化） */
   id: string;
@@ -39,7 +41,7 @@ export interface Project {
   platform: string | null;
   repoUrl: string;
   /** 下载渠道；提供时卡片渲染「下载」下拉按钮，未提供则不渲染 */
-  downloads?: readonly { label: string; url: string }[];
+  downloads?: readonly { channel: DownloadChannel; url: string }[];
   cover: string;
   /** 开发语言（GitHub API language 字段） */
   language: string;

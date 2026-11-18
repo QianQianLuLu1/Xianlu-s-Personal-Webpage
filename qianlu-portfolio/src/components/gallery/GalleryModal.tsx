@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -7,6 +8,7 @@ import AnimatedNumber from '@/components/animated-number';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import PhotoPicture from '@/components/photo-picture';
 import { useMotionTier } from '@/hooks/use-motion-tier';
+import i18n from '@/lib/i18n';
 import { DUR_FAST, SPRING_OVERLAY } from '@/lib/motion';
 import type { Photo } from '@/data/photos.generated';
 
@@ -26,6 +28,7 @@ export default function GalleryModal({
   onClose,
   onNavigate,
 }: GalleryModalProps) {
+  const { t } = useTranslation('home');
   const photo = activeIndex === null ? null : photos[activeIndex];
   const total = photos.length;
   const motionTier = useMotionTier();
@@ -53,9 +56,11 @@ export default function GalleryModal({
             if (event.key === 'ArrowRight') goNext();
           }}
         >
-          <DialogTitle className="sr-only">{`作品 ${photo.title}`}</DialogTitle>
+          <DialogTitle className="sr-only">
+            {t('gallery.modalTitle', { title: photo.title })}
+          </DialogTitle>
           <DialogDescription className="sr-only">
-            {`第 ${(activeIndex ?? 0) + 1} 张，共 ${total} 张。可使用左右方向键切换。`}
+            {t('gallery.modalDesc', { current: (activeIndex ?? 0) + 1, total })}
           </DialogDescription>
 
           {/* mt-6 给右上角悬浮关闭钮（图标底缘 40px）让位，避免压住图片顶边 */}
@@ -63,7 +68,11 @@ export default function GalleryModal({
             {/* key 随作品变化，左右切换时按方向弹入（spring 回弹）；兼容模式只做快速淡入 */}
             <motion.div
               key={photo.id}
-              initial={motionTier === 'full' ? { opacity: 0, x: 40 * direction } : { opacity: 0 }}
+              initial={
+                motionTier === 'full'
+                  ? { opacity: 0, x: 40 * direction * (i18n.dir() === 'rtl' ? -1 : 1) }
+                  : { opacity: 0 }
+              }
               animate={motionTier === 'full' ? { opacity: 1, x: 0 } : { opacity: 1 }}
               transition={motionTier === 'full' ? SPRING_OVERLAY : { duration: DUR_FAST }}
             >
@@ -72,7 +81,7 @@ export default function GalleryModal({
                 sizes="(min-width: 1024px) 80vw, 100vw"
                 loading="eager"
                 className="mx-auto max-h-[72vh] w-auto object-contain"
-                alt={`作品 ${photo.title}`}
+                alt={t('gallery.modalTitle', { title: photo.title })}
               />
             </motion.div>
           </div>
@@ -86,11 +95,11 @@ export default function GalleryModal({
             </span>
 
             <div className="flex gap-2">
-              <Button variant="outline" size="icon" onClick={goPrev} aria-label="上一张">
-                <ChevronLeft />
+              <Button variant="outline" size="icon" onClick={goPrev} aria-label={t('gallery.prev')}>
+                <ChevronLeft className="rtl:rotate-180" />
               </Button>
-              <Button variant="outline" size="icon" onClick={goNext} aria-label="下一张">
-                <ChevronRight />
+              <Button variant="outline" size="icon" onClick={goNext} aria-label={t('gallery.next')}>
+                <ChevronRight className="rtl:rotate-180" />
               </Button>
             </div>
           </div>

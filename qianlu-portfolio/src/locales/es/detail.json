@@ -1,0 +1,953 @@
+{
+  "chrome": {
+    "breadcrumb": "Miga de pan",
+    "home": "Inicio",
+    "tools": "Herramientas de código abierto",
+    "openSource": "Código abierto",
+    "repo": "Repositorio de GitHub",
+    "getInstaller": "Obtener instalador",
+    "quickStart": "Inicio rápido",
+    "tocAria": "Índice de la página",
+    "tocTitle": "En esta página",
+    "projectNav": "Cambio de proyecto",
+    "prev": "Proyecto anterior",
+    "next": "Proyecto siguiente",
+    "coverAlt": "Portada de {{name}}"
+  },
+  "flashgaze": {
+    "tagline": "Una CLI de puntuación de imágenes local asistida por IA: métricas objetivas de CV como base, modelos de visión que compensan cuando hace falta, diseñada para una invocación estable por agentes de IA",
+    "overview": {
+      "title": "Descripción del proyecto",
+      "b0": "Elegir las mejores decenas de fotos entre cientos es lento y subjetivo. FlashGaze lo automatiza: un motor de CV mide objetivamente la nitidez y la exposición en tu propia máquina, una capa opcional de modelo de visión decide si el desenfoque o la oscuridad son una decisión artística (bokeh de fondo, siluetas a contraluz, ambiente de clave baja) o un error técnico, y el resultado es un informe estructurado, ordenado y con razones que puedes conectar directamente a cualquier flujo de trabajo.",
+      "b1": "Su forma principal es la línea de comandos: JSON limpio por stdout, registros por stderr y códigos de salida estándar, naturalmente adecuada para una invocación estable mediante subprocess por agentes de IA. También incluye una interfaz gráfica de navegador basada en Gradio y un MCP Server integrado: fotógrafos, desarrolladores y asistentes de IA encuentran una forma de uso que les resulta cómoda.",
+      "b2": {
+        "title": "Modo de coste cero",
+        "text": "Añade --no-vlm para ejecutarlo totalmente sin conexión: sin API Key, sin enviar ningún dato, y la misma imagen puntuada 10 veces seguidas devuelve puntuaciones idénticas (reproducibilidad 10/10 verificada)."
+      }
+    },
+    "how": {
+      "title": "Cómo funciona",
+      "b0": {
+        "nodes": [
+          {
+            "title": "Carpeta de imágenes",
+            "lines": [
+              "JPG · PNG · WebP"
+            ]
+          },
+          {
+            "title": "CVEngine",
+            "lines": [
+              "Nitidez · Exposición",
+              "Composición (experimental)"
+            ]
+          },
+          {
+            "title": "HybridScorer",
+            "lines": [
+              "Puntuación CV ponderada + compensación ± del VLM",
+              "= puntuación final 0–100"
+            ]
+          },
+          {
+            "title": "Exporter",
+            "lines": [
+              "Copiar / mover la selección",
+              "Manifiesto JSON / CSV",
+              "vlm_reason · vlm_provider"
+            ]
+          }
+        ],
+        "note": "Rama secundaria: VLMClient (opcional) se conecta a HybridScorer y admite cuatro tipos de proveedores: Qwen-VL / GPT-4o / Claude 3 / Ollama."
+      },
+      "b1": {
+        "headers": [
+          "Dimensión",
+          "Método",
+          "Rango",
+          "Por defecto"
+        ],
+        "rows": [
+          [
+            "Nitidez",
+            "Varianza laplaciana, mapeo lineal, con tope en 500",
+            "0–100",
+            "Activado"
+          ],
+          [
+            "Exposición",
+            "Proporción de tonos medios del histograma (penaliza píxeles extremadamente oscuros / brillantes)",
+            "0–100",
+            "Activado"
+          ],
+          [
+            "Composición",
+            "Regla de los tercios + centroide del primer plano con Otsu (experimental)",
+            "0–100",
+            "Desactivado (--enable-composition)"
+          ],
+          [
+            "Ruido",
+            "Evaluación de calidad sin referencia BRISQUE (requiere opencv-contrib-python)",
+            "0–100",
+            "Desactivado (--enable-noise)"
+          ],
+          [
+            "Color",
+            "Entropía del histograma HSV + saturación media",
+            "0–100",
+            "Desactivado (--enable-color)"
+          ],
+          [
+            "Retrato",
+            "Número de rostros + bonificación de nitidez en las regiones faciales (requiere face_recognition)",
+            "Bonificación +3~5",
+            "Desactivado (--enable-portrait)"
+          ],
+          [
+            "Deduplicación",
+            "Hash perceptual PHash; solo conserva la puntuación más alta de cada grupo similar (requiere imagededup)",
+            "Solo marcado",
+            "Desactivado (--enable-dedup)"
+          ]
+        ]
+      },
+      "b2": "Los pesos por defecto son 50% nitidez + 50% exposición. Si se activan dimensiones opcionales sin especificar --weights manualmente, se inyecta automáticamente un conjunto razonable de pesos por defecto (p. ej., todo activado → nitidez 0.35 / exposición 0.25 / composición 0.20 / ruido 0.10 / color 0.10); también puedes personalizarlo por completo con --weights.",
+      "b3": {
+        "title": "Mecanismo de compensación del VLM",
+        "text": "El VLM recibe a la vez la imagen y las métricas de CV, juzga si el desenfoque o la oscuridad son intención creativa o un error de captura, y devuelve una compensación con signo limitada a ±10 puntos, que se suma a la puntuación CV ponderada y se acota (clamp) a 0–100. Cuando la compensación no es cero, la salida incluye obligatoriamente una razón de ≤20 caracteres (vlm_reason) y el identificador del proveedor (vlm_provider): cada punto tiene su origen."
+      }
+    },
+    "features": {
+      "title": "Características principales",
+      "b0": [
+        {
+          "title": "Motor de puntuación híbrido",
+          "description": "La puntuación objetiva de CV (varianza laplaciana + exposición por histograma) forma la base y domina el resultado; la compensación de escena del VLM tiene un tope de ±10 puntos: la estética tiene voz, pero no da la vuelta al veredicto."
+        },
+        {
+          "title": "Puntuaciones explicables",
+          "description": "Cada compensación del VLM incluye una razón en chino de ≤20 caracteres y el identificador del proveedor, escritos en la salida JSON / CSV: cada punto se puede rastrear."
+        },
+        {
+          "title": "Puntuación según la escena",
+          "description": "--scene alterna entre prompts diferenciados para las cuatro escenas auto / portrait / landscape / still_life, de modo que la compensación se ajuste al tema de la foto."
+        },
+        {
+          "title": "Múltiples proveedores de VLM",
+          "description": "Qwen-VL por defecto, sin dependencias añadidas; GPT-4o, Claude 3 y Ollama se conectan mediante la capa unificada de LiteLLM, sin código de adaptación específico de ningún fabricante."
+        },
+        {
+          "title": "Compatible con agentes",
+          "description": "JSON puro por stdout, registros por stderr y códigos de salida estándar: un subprocess puede hacer json.loads directamente sobre la salida, y el procesamiento por lotes es estable sin sobresaltar a quien lo invoca."
+        },
+        {
+          "title": "Sin conexión y coste cero",
+          "description": "El modo --no-vlm no toca la red y no necesita API Key: ideal para un primer filtrado masivo y para escenarios sensibles a la privacidad."
+        },
+        {
+          "title": "Degradación elegante",
+          "description": "Las imágenes dañadas devuelven score=0 con un campo error; los fallos del VLM retroceden automáticamente a CV puro: ningún punto único de fallo interrumpe el lote."
+        },
+        {
+          "title": "MCP Server integrado",
+          "description": "Instala el extra [mcp], añade un fragmento de configuración a tu herramienta de IA y esta podrá invocar directamente la puntuación, la selección, la exportación y la limpieza del espacio de trabajo."
+        }
+      ]
+    },
+    "install": {
+      "title": "Instalación",
+      "b0": [
+        {
+          "title": "Clonar el repositorio e instalar en local",
+          "text": "Requiere Python 3.10+."
+        },
+        {
+          "title": "Añadir capacidades opcionales según se necesiten",
+          "text": "Las capacidades opcionales están todas desactivadas por defecto y se instalan bajo demanda; si faltan dependencias, se degrada automáticamente sin errores."
+        },
+        {
+          "title": "Confirmar que la instalación fue exitosa",
+          "text": "Ejecuta flashgaze --version para ver el número de versión."
+        }
+      ],
+      "b3": {
+        "headers": [
+          "Extra",
+          "Cómo activarlo",
+          "Capacidad añadida"
+        ],
+        "rows": [
+          [
+            "mcp",
+            "Integrado tras la instalación",
+            "MCP Server para herramientas de IA"
+          ],
+          [
+            "cv-enhanced",
+            "--enable-noise",
+            "Puntuación de ruido BRISQUE"
+          ],
+          [
+            "portrait",
+            "--enable-portrait",
+            "Bonificación por rostros/retratos (+3~5)"
+          ],
+          [
+            "dedup",
+            "--enable-dedup",
+            "Deduplicación por hash perceptual PHash"
+          ],
+          [
+            "vlm-multi",
+            "--vlm-provider distinto de qwen",
+            "GPT-4o / Claude 3 / Ollama"
+          ],
+          [
+            "gui",
+            "Iniciar con flashgaze-webui",
+            "Interfaz gráfica de navegador con Gradio"
+          ],
+          [
+            "exif",
+            "--exif (--no-exif-backup omite la copia de seguridad)",
+            "Escribir las puntuaciones en los metadatos EXIF (solo JPEG/TIFF)"
+          ],
+          [
+            "xlsx",
+            "--xlsx (--xlsx-output cambia la ruta)",
+            "Generar una hoja de puntuaciones .xlsx"
+          ],
+          [
+            "Plugins (integrados)",
+            "--enable-plugins (--plugin-dir)",
+            "Etapa de puntuación mediante plugins detectables"
+          ],
+          [
+            "all",
+            "—",
+            "Instalar todo lo anterior de una vez"
+          ]
+        ]
+      },
+      "b4": {
+        "text": "El proveedor por defecto qwen no necesita LiteLLM; si faltan dependencias opcionales no se producen errores: las dimensiones correspondientes devuelven null / 0 / false y el lote continúa."
+      }
+    },
+    "quickstart": {
+      "title": "Inicio rápido",
+      "b1": "El informe JSON incluye un summary (total, seleccionadas, puntuación media, tiempo transcurrido) y métricas por imagen; el campo selected marca las elegidas y puede impulsar directamente la exportación y los flujos de automatización posteriores."
+    },
+    "cli": {
+      "title": "Opciones de la CLI",
+      "b0": "Pasa un directorio de imágenes o una ruta de archivo seguido de las opciones. Los parámetros habituales se mantienen sincronizados con el README del repositorio:",
+      "b1": {
+        "headers": [
+          "Opción",
+          "Descripción"
+        ],
+        "rows": [
+          [
+            "--top N",
+            "Seleccionar las N imágenes con mayor puntuación (por defecto 30)"
+          ],
+          [
+            "--threshold SCORE",
+            "Umbral de puntuación (alternativa a --top)"
+          ],
+          [
+            "--export",
+            "Copiar las imágenes de alta puntuación al directorio de exportación"
+          ],
+          [
+            "--export-dir PATH",
+            "Directorio de destino de la exportación (por defecto ./精选)"
+          ],
+          [
+            "--move",
+            "Mover en lugar de copiar (requiere --export)"
+          ],
+          [
+            "--json",
+            "Emitir el manifiesto JSON por stdout"
+          ],
+          [
+            "--csv",
+            "Emitir un manifiesto CSV"
+          ],
+          [
+            "--output PATH",
+            "Escribir el manifiesto JSON en un archivo"
+          ],
+          [
+            "--csv-output PATH",
+            "Ruta de salida del manifiesto CSV (por defecto flashgaze_result.csv)"
+          ],
+          [
+            "--exif",
+            "Escribir la puntuación final en los metadatos EXIF de la imagen (solo JPEG/TIFF)"
+          ],
+          [
+            "--no-exif-backup",
+            "No crear copias de seguridad .flashgaze_backup del archivo original al escribir EXIF"
+          ],
+          [
+            "--xlsx",
+            "Generar además una hoja de puntuaciones .xlsx"
+          ],
+          [
+            "--xlsx-output PATH",
+            "Ruta de salida del .xlsx (por defecto flashgaze_result.xlsx)"
+          ],
+          [
+            "--enable-plugins",
+            "Activar la etapa de puntuación por plugins (detecta automáticamente los directorios de plugins integrados y del usuario)"
+          ],
+          [
+            "--plugin-dir PATH",
+            "Directorio de plugins adicional, combinado con los directorios integrados y del usuario para la detección"
+          ],
+          [
+            "--no-vlm",
+            "Desactivar el VLM, solo CV (coste de API cero)"
+          ],
+          [
+            "--vlm-provider PROVEEDOR",
+            "qwen (por defecto) / openai / anthropic / ollama"
+          ],
+          [
+            "--scene ESCENA",
+            "auto (por defecto) / portrait / landscape / still_life"
+          ],
+          [
+            "--enable-composition",
+            "Activar la puntuación de composición (experimental)"
+          ],
+          [
+            "--enable-noise",
+            "Activar la puntuación de ruido BRISQUE (requiere archivo de modelo)"
+          ],
+          [
+            "--enable-color",
+            "Activar la puntuación de riqueza de color"
+          ],
+          [
+            "--enable-portrait",
+            "Activar la puntuación específica de retratos (bonificación +3~5)"
+          ],
+          [
+            "--enable-dedup",
+            "Activar la deduplicación PHash (conserva la mayor puntuación entre imágenes similares)"
+          ],
+          [
+            "--dedup-threshold N",
+            "Umbral de distancia de Hamming de PHash (por defecto 8; cuanto menor, más estricto)"
+          ],
+          [
+            "--weights JSON",
+            "Pesos de dimensión personalizados; claves opcionales: composition / noise / color"
+          ],
+          [
+            "--workers N",
+            "Hilos de trabajo concurrentes (por defecto 4)"
+          ],
+          [
+            "--config-file PATH",
+            "Ruta a un archivo de configuración JSON"
+          ],
+          [
+            "--verbose",
+            "Registro detallado (stderr)"
+          ],
+          [
+            "--no-downscale",
+            "Desactivar el reescalado de imágenes grandes (por defecto, las imágenes con el lado mayor por encima de 2048px se reescalan para ahorrar memoria)"
+          ],
+          [
+            "--api-key KEY",
+            "API Key del VLM (sobrescribe la variable de entorno)"
+          ],
+          [
+            "--api-base URL",
+            "Endpoint del VLM (sobrescribe la variable de entorno)"
+          ],
+          [
+            "--model NAME",
+            "Nombre del modelo VLM (sobrescribe la variable de entorno)"
+          ],
+          [
+            "--version",
+            "Mostrar el número de versión y salir"
+          ]
+        ]
+      }
+    },
+    "vlm": {
+      "title": "Proveedores de VLM",
+      "b0": "Los cuatro tipos de proveedores se conectan mediante una capa de llamada unificada, sin código de adaptación específico de ningún fabricante: qwen (por defecto) usa la ruta nativa de requests sin dependencias añadidas; los otros tres pasan por la capa unificada de LiteLLM. Todos los proveedores reciben su clave mediante la variable de entorno FLASHGAZE_API_KEY (Ollama no necesita una clave real: cualquier valor no vacío sirve).",
+      "b1": {
+        "headers": [
+          "Proveedor",
+          "Modelo de ejemplo",
+          "Endpoint de API",
+          "Requiere LiteLLM"
+        ],
+        "rows": [
+          [
+            "qwen (por defecto)",
+            "qwen-vl-max",
+            "Endpoint compatible-mode de DashScope",
+            "No"
+          ],
+          [
+            "openai",
+            "gpt-4o",
+            "https://api.openai.com/v1",
+            "Sí"
+          ],
+          [
+            "anthropic",
+            "claude-3-5-sonnet-20241022",
+            "Dejar vacío para usar el endpoint por defecto de LiteLLM",
+            "Sí"
+          ],
+          [
+            "ollama",
+            "llama3.2-vision",
+            "http://localhost:11434",
+            "Sí"
+          ]
+        ]
+      },
+      "b3": {
+        "title": "Degradación elegante",
+        "text": "Si LiteLLM no está instalado y se elige un proveedor distinto de qwen, las llamadas al VLM devuelven el error litellm_not_installed y retroceden automáticamente al modo de CV puro mientras el lote se completa con normalidad; los valores no válidos de provider / scene retroceden a los valores por defecto y registran un warning."
+      }
+    },
+    "scene": {
+      "title": "Puntuación según la escena",
+      "b0": "--scene cambia el prompt del VLM para que la compensación se centre en las técnicas artísticas de distintos temas; auto (por defecto) deja que el VLM determine la escena por sí mismo, semánticamente idéntico al prompt único original.",
+      "b1": {
+        "headers": [
+          "Escena",
+          "Ideal para",
+          "Enfoque del prompt"
+        ],
+        "rows": [
+          [
+            "auto (por defecto)",
+            "Carpetas mixtas, contenido desconocido",
+            "El VLM determina la escena por sí mismo"
+          ],
+          [
+            "portrait",
+            "Retratos / fotos de perfil / retratos callejeros",
+            "El desenfoque de fondo como técnica artística; nitidez de las regiones faciales"
+          ],
+          [
+            "landscape",
+            "Paisajes / naturaleza / arquitectura",
+            "Agua y nubes en larga exposición; siluetas; ambiente de clave baja"
+          ],
+          [
+            "still_life",
+            "Productos / gastronomía / bodegones montados",
+            "Control de la profundidad de campo; ambiente de iluminación; texturas de clave baja"
+          ]
+        ]
+      }
+    },
+    "mcp": {
+      "title": "MCP Server",
+      "b0": "Tras instalar el extra [mcp], añade la configuración siguiente a los ajustes MCP de tu herramienta de IA y el asistente podrá dirigir directamente todas las capacidades de FlashGaze:",
+      "b2": {
+        "headers": [
+          "Herramienta",
+          "Función"
+        ],
+        "rows": [
+          [
+            "score_images",
+            "Puntuar por lotes todas las imágenes de un directorio"
+          ],
+          [
+            "score_single_image",
+            "Puntuar una sola imagen y devolver métricas detalladas"
+          ],
+          [
+            "score_uploaded_images",
+            "Puntuar imágenes de una lista de rutas (sin depender de la estructura de directorios)"
+          ],
+          [
+            "export_selected_images",
+            "Copiar / mover las imágenes de alta puntuación a un directorio de destino tras puntuar"
+          ],
+          [
+            "cleanup_workspace_images",
+            "Eliminar in situ las imágenes de baja puntuación tras puntuar (con modo seguro dry_run)"
+          ]
+        ]
+      },
+      "b3": "Una vez configurado, solo dile al asistente: «Evalúa la calidad de las imágenes de este directorio», «Selecciona las 30 mejores fotos» o «Limpia las imágenes de mala calidad del espacio de trabajo».",
+      "b4": {
+        "title": "Seguridad de la limpieza del espacio de trabajo",
+        "text": "La eliminación en cleanup_workspace_images está estrictamente confinada al directorio workspace: se resuelven las rutas reales y el límite se verifica dos veces con relative_to; dry_run=True es el valor por defecto, de modo que solo informa de la lista pendiente de eliminación sin borrar nada, y la ruta de cada archivo se vuelve a validar antes de eliminarlo."
+      }
+    },
+    "gui": {
+      "title": "Web GUI",
+      "b0": "Una interfaz de navegador basada en Gradio mapea todos los parámetros de la CLI a controles de la interfaz, y la puntuación reutiliza la misma cadena de ensamblaje de HybridScorer: con el mismo directorio y los mismos parámetros, los resultados de la GUI y la CLI son idénticos byte a byte. Por defecto solo es accesible desde la máquina local (127.0.0.1:7860); el acceso desde la red local requiere pasar explícitamente --host 0.0.0.0.",
+      "b2": {
+        "headers": [
+          "Parámetro de inicio",
+          "Descripción"
+        ],
+        "rows": [
+          [
+            "--host HOST",
+            "Dirección de escucha (por defecto 127.0.0.1; usa 0.0.0.0 para la red local)"
+          ],
+          [
+            "--port PORT",
+            "Puerto de escucha (por defecto 7860)"
+          ],
+          [
+            "--dir PATH",
+            "Rellenar previamente el directorio de imágenes (solo rellena el campo; la puntuación no comienza automáticamente)"
+          ],
+          [
+            "--share",
+            "Activar un enlace público temporal de Gradio"
+          ],
+          [
+            "--version",
+            "Imprimir el número de versión y salir"
+          ]
+        ]
+      },
+      "b3": {
+        "headers": [
+          "Sección de la interfaz",
+          "Contenido"
+        ],
+        "rows": [
+          [
+            "Directorio y parámetros básicos",
+            "Directorio, --top, --threshold, --scene, --no-vlm"
+          ],
+          [
+            "Dimensiones CV mejoradas",
+            "Composición / ruido / color / retrato / deduplicación / --no-downscale"
+          ],
+          [
+            "Pesos",
+            "Cinco deslizadores (nitidez / exposición / composición / ruido / color), normalización automática"
+          ],
+          [
+            "Configuración del VLM",
+            "Proveedor, API Key, endpoint, modelo, concurrencia (desactivado en modo sin conexión)"
+          ],
+          [
+            "Resultados de puntuación",
+            "Resumen JSON + tabla ordenable (columnas idénticas al CSV)"
+          ],
+          [
+            "Vista previa de las mejores imágenes",
+            "Galería de miniaturas ordenada por puntuación descendente, con puntuación / marca de selección / razón del VLM"
+          ],
+          [
+            "Filtrado",
+            "Filtrar la tabla y la galería por selección / puntuación mínima / palabra clave (no afecta a la exportación)"
+          ],
+          [
+            "Exportación",
+            "Copiar / mover a un directorio, descargar JSON, descargar CSV"
+          ]
+        ]
+      },
+      "b4": {
+        "title": "Modo sin conexión",
+        "text": "Marca «Desactivar VLM (puntuación CV pura sin conexión)» para completar todo el flujo de puntuación sin API Key, exactamente igual que flashgaze --no-vlm; la sección de configuración del VLM se desactiva entonces automáticamente para evitar configuraciones inútiles."
+      }
+    },
+    "agent": {
+      "title": "Integración con agentes de IA",
+      "b0": "El repositorio incluye un SKILL.md compatible con el estándar de agentskills.io, de modo que las herramientas que lo admiten —TRAE, Claude Code, Cursor y otras— pueden cargarlo como habilidad en un solo paso:",
+      "b2": "O invócalo de forma estable desde cualquier script de Python mediante subprocess: stdout solo transporta JSON y todos los registros van por stderr:"
+    },
+    "config": {
+      "title": "Configuración y códigos de salida",
+      "b0": "Prioridad de configuración: parámetros de la CLI > variables de entorno > archivo de configuración (config.example.json) > valores por defecto; el campo weights solo puede establecerse en el archivo de configuración.",
+      "b1": {
+        "headers": [
+          "Variable de entorno",
+          "Descripción",
+          "Valor por defecto"
+        ],
+        "rows": [
+          [
+            "FLASHGAZE_API_KEY",
+            "API Key del VLM (no necesaria en el modo --no-vlm)",
+            "—"
+          ],
+          [
+            "FLASHGAZE_API_BASE",
+            "Endpoint de API",
+            "Endpoint compatible-mode de DashScope"
+          ],
+          [
+            "FLASHGAZE_MODEL",
+            "Nombre del modelo",
+            "qwen-vl-max"
+          ],
+          [
+            "FLASHGAZE_VLM_PROVIDER",
+            "Proveedor: qwen / openai / anthropic / ollama",
+            "qwen"
+          ],
+          [
+            "FLASHGAZE_SCENE",
+            "Modo de escena",
+            "auto"
+          ],
+          [
+            "FLASHGAZE_TIMEOUT",
+            "Tiempo de espera de las solicitudes (segundos)",
+            "30"
+          ],
+          [
+            "FLASHGAZE_WORKERS",
+            "Hilos de trabajo concurrentes",
+            "4"
+          ],
+          [
+            "FLASHGAZE_MAX_RETRIES",
+            "Número de reintentos del VLM (solo tiempos de espera / errores de conexión)",
+            "3"
+          ],
+          [
+            "FLASHGAZE_VLM_MAX_ADJUSTMENT",
+            "Tope de compensación del VLM",
+            "10.0"
+          ]
+        ]
+      },
+      "b2": {
+        "headers": [
+          "Código de salida",
+          "Significado"
+        ],
+        "rows": [
+          [
+            "0",
+            "Éxito"
+          ],
+          [
+            "1",
+            "Error de parámetros"
+          ],
+          [
+            "2",
+            "Fallo de llamada a la API (reservado: los fallos del VLM ya se degradan a CV puro)"
+          ],
+          [
+            "3",
+            "Directorio no válido o sin imágenes"
+          ],
+          [
+            "4",
+            "Error de procesamiento de imágenes (reservado: las imágenes dañadas ya se degradan al campo error)"
+          ],
+          [
+            "5",
+            "Fallo de exportación"
+          ],
+          [
+            "6",
+            "Error de configuración (falta la API Key, etc.)"
+          ]
+        ]
+      },
+      "b3": "Los códigos de salida 2 y 4 están reservados: los fallos de llamada al VLM se degradan a CV puro (compensación 0), y las imágenes dañadas se degradan al campo error de esa imagen con score=0; ninguno de los dos interrumpe el lote."
+    },
+    "quality": {
+      "title": "Pruebas y stack tecnológico",
+      "b0": "La suite completa de pytest tiene 1076 casos (1076 superados / 29 omitidos, cobertura del 90.49% ≥ umbral del 80%), que cubren el motor de CV, el cliente VLM, el puntuador híbrido, el exportador, el analizador de la CLI, los flujos de extremo a extremo, la reproducibilidad, la capa de configuración y la seguridad de la limpieza: puntuaciones reproducibles y explicables, no un simple eslogan.",
+      "b1": {
+        "headers": [
+          "Dependencia",
+          "Uso"
+        ],
+        "rows": [
+          [
+            "Python 3.10+",
+            "Entorno de ejecución"
+          ],
+          [
+            "OpenCV 4.x (headless)",
+            "Puntuación CV (varianza laplaciana, histogramas, umbralización de Otsu)"
+          ],
+          [
+            "Pillow",
+            "Respaldo de decodificación de imágenes (WebP, JPEG dañados)"
+          ],
+          [
+            "NumPy",
+            "Operaciones con arrays"
+          ],
+          [
+            "requests",
+            "Llamadas a la API del VLM (endpoints Qwen-VL / compatibles con OpenAI)"
+          ],
+          [
+            "litellm",
+            "Capa unificada de llamada multi-VLM (instalación opcional)"
+          ],
+          [
+            "mcp",
+            "MCP Server (instalación opcional)"
+          ]
+        ]
+      }
+    }
+  },
+  "nikki-gallery": {
+    "tagline": "Un gestor de álbumes de escritorio para Windows creado para jugadores de Infinity Nikki: escanea, explora, edita, organiza y comparte en un solo lugar, con todos los datos en local",
+    "overview": {
+      "title": "Descripción del proyecto",
+      "b0": "MeowStarMap (antes NikkiGallery) es un gestor de álbumes de escritorio para Windows diseñado para jugadores de Infinity Nikki: escanea automáticamente las capturas y grabaciones del juego y ofrece exploración, edición, gestión por categorías y búsqueda de imágenes de nivel profesional, cubriendo en un solo lugar todo el flujo de vida del álbum.",
+      "b1": "Todos los datos se almacenan en local y nada se sube a la nube: cada creación de estilo de tu álbum te pertenece solo a ti.",
+      "b2": {
+        "title": "Local primero",
+        "text": "Los índices de escaneo, los resultados de edición y los perfiles de categorías se guardan íntegramente en una base de datos SQLite local en tu máquina; nada se sube a la nube."
+      }
+    },
+    "features": {
+      "title": "Resumen de funciones",
+      "b0": [
+        {
+          "title": "Escaneo inteligente",
+          "description": "Localiza automáticamente el directorio del juego (registro de Steam / Epic + escaneo de firmas en todo el disco), con escaneo incremental y procesamiento concurrente de varias unidades; distingue inteligentemente tres orígenes: capturas del juego, caché del lanzador y álbum en la nube."
+        },
+        {
+          "title": "Galería multivista",
+          "description": "Cinco modos de exploración —cuadrícula, lista, cascada, línea de tiempo y cronología de eventos—, más visualización a pantalla completa y reproducción de diapositivas, con selección múltiple mediante Ctrl / Shift para operaciones por lotes."
+        },
+        {
+          "title": "Edición profesional de imágenes",
+          "description": "14 ajustes básicos + gradación independiente HSL de ocho colores + curvas RGB multicanal + división de tonos + presets de filtros, con deshacer / rehacer completo y aplicación por lotes."
+        },
+        {
+          "title": "Procesamiento de vídeo",
+          "description": "Extracción de miniaturas, recorte de vídeo, control de velocidad 0.25x–4x, conversión de formatos y exportación de Apple Live Photo."
+        },
+        {
+          "title": "Organización inteligente",
+          "description": "Categorías del sistema + árbol de categorías personalizadas de tres niveles (orden por arrastre / etiquetas de color), gestión de etiquetas y cinco dimensiones de agrupación inteligente (tipo de álbum / escena / franja horaria / conjunto / tipo)."
+        },
+        {
+          "title": "«Registro de resonancia» (nuevo en 2.5.0)",
+          "description": "Consulta y registro manual de tiradas gacha, estado de posesión del armario y progreso de colección de conjuntos, importación/exportación de JSON local y estadísticas personales; los datos de gacha y armario funcionan totalmente sin conexión."
+        },
+        {
+          "title": "Sincronización entre dispositivos (nuevo en 2.5.5)",
+          "description": "Servidor integrado del protocolo NikkiSync v1: emparejamiento y autenticación mediante HTTPS + WebSocket en la red local para que los dispositivos móviles sincronicen directamente la biblioteca multimedia local; la sección «Galería de sincronización» está desactivada por defecto."
+        },
+        {
+          "title": "Detección de duplicados",
+          "description": "Doble detección con comparación exacta SHA256 + hash perceptual (pHash), y puntuación inteligente en 4 dimensiones para recomendar qué copia conservar."
+        },
+        {
+          "title": "Compartir y copias de seguridad",
+          "description": "Compartir por portapapeles a WeChat / QQ / vivo + transferencia por WiFi en la red local (autenticación por PIN); copias de seguridad automáticas programadas y manuales, con rotación LRU de 5 copias."
+        }
+      ]
+    },
+    "more": {
+      "title": "Más capacidades",
+      "b0": "Además de las funciones principales del álbum, incluye un conjunto de capacidades complementarias que hacen más cómodo el uso a largo plazo:",
+      "b1": [
+        {
+          "title": "12 idiomas",
+          "description": "Interfaz integrada en 12 idiomas (internacionalización con i18next)."
+        },
+        {
+          "title": "Temas duales",
+          "description": "Además del tema por defecto, ofrece el tema «Rosa suave de lujo»."
+        },
+        {
+          "title": "Sistema de plugins",
+          "description": "Una arquitectura de plugins abierta para que las funciones sigan creciendo."
+        },
+        {
+          "title": "Perfiles de personaje",
+          "description": "Gestión de perfiles de personaje aislados por cuenta / UID, para que los materiales de distintas partidas nunca se mezclen."
+        },
+        {
+          "title": "Descifrado de parámetros del juego",
+          "description": "Herramienta integrada de descifrado de parámetros del juego."
+        },
+        {
+          "title": "Diagnóstico",
+          "description": "Capacidades de diagnóstico integradas para resolver problemas con datos en los que apoyarse."
+        }
+      ]
+    },
+    "stack": {
+      "title": "Stack tecnológico",
+      "b0": "Una combinación moderna de escritorio con Electron + React, SQLite para el almacenamiento local y los motores duales sharp y FFmpeg para el procesamiento de imágenes y vídeo:",
+      "b1": {
+        "headers": [
+          "Área",
+          "Tecnología"
+        ],
+        "rows": [
+          [
+            "Framework de escritorio",
+            "Electron 41.10"
+          ],
+          [
+            "Framework de frontend",
+            "React 19.2 + TypeScript 5.9"
+          ],
+          [
+            "Gestión de estado",
+            "Zustand 5.0"
+          ],
+          [
+            "Estilos",
+            "Tailwind CSS 3.4"
+          ],
+          [
+            "Base de datos",
+            "SQLite (better-sqlite3 12.11)"
+          ],
+          [
+            "Procesamiento de imágenes",
+            "sharp 0.35"
+          ],
+          [
+            "Procesamiento de vídeo",
+            "ffmpeg-static + fluent-ffmpeg"
+          ],
+          [
+            "Herramienta de compilación",
+            "Vite 6.4"
+          ],
+          [
+            "Animación",
+            "Motion 12.42"
+          ],
+          [
+            "Internacionalización",
+            "i18next 26.3 + react-i18next 17.0"
+          ],
+          [
+            "Búsqueda de texto completo",
+            "FlexSearch 0.8"
+          ],
+          [
+            "Llamadas FFI",
+            "koffi 3.1"
+          ],
+          [
+            "Validación",
+            "zod 4.4"
+          ],
+          [
+            "Framework de pruebas",
+            "Vitest 5.0"
+          ]
+        ]
+      }
+    },
+    "download": {
+      "title": "Descarga e instalación",
+      "b0": [
+        {
+          "title": "GitHub Releases",
+          "text": "Ve a la página de Releases para descargar el instalador más reciente."
+        },
+        {
+          "title": "Otros canales",
+          "text": "Busca «纤璐不会玩摄影» en Douyin / Bilibili para obtener las instrucciones de descarga."
+        }
+      ],
+      "b1": {
+        "title": "Requisitos del sistema",
+        "text": "Windows 10 (1803 o posterior) / Windows 11, arquitectura x64."
+      }
+    },
+    "dev": {
+      "title": "Guía para desarrolladores",
+      "b0": "Requisito previo: Node.js ≥ 22.12.0. Clona el repositorio y ejecuta la aplicación de escritorio completa en local:",
+      "b2": {
+        "headers": [
+          "Comando habitual",
+          "Uso"
+        ],
+        "rows": [
+          [
+            "npm run test",
+            "Ejecutar las pruebas"
+          ],
+          [
+            "npm run lint",
+            "Revisar el código (lint)"
+          ],
+          [
+            "npm run typecheck",
+            "Comprobación de tipos"
+          ],
+          [
+            "npm run format",
+            "Formatear el código"
+          ],
+          [
+            "npm run storybook",
+            "Iniciar el sitio de documentación de componentes (Storybook, puerto 6006)"
+          ]
+        ]
+      },
+      "b3": "Vistazo a la estructura del repositorio (consulta ARCHITECTURE.md para la descripción completa de la arquitectura):"
+    },
+    "docs": {
+      "title": "Documentación",
+      "b0": "Para profundizar en la arquitectura, contribuir o resolver problemas por tu cuenta, el repositorio incluye un conjunto completo de documentos:",
+      "b1": [
+        {
+          "label": "ARCHITECTURE.md",
+          "description": "Documento de diseño de arquitectura (en chino)"
+        },
+        {
+          "label": "ARCHITECTURE.en.md",
+          "description": "Documento de diseño de arquitectura (en inglés)"
+        },
+        {
+          "label": "DEVELOPMENT.md",
+          "description": "Guía de desarrollo (en chino)"
+        },
+        {
+          "label": "DEVELOPMENT.en.md",
+          "description": "Guía de desarrollo (en inglés)"
+        },
+        {
+          "label": "CHANGELOG.md",
+          "description": "Registro de cambios"
+        },
+        {
+          "label": "docs/",
+          "description": "Contratos IPC, API de plugins, manual de resolución de problemas y más"
+        },
+        {
+          "label": "docs/tutorial/用户使用教程.md",
+          "description": "Tutorial ilustrado de uso para jugadores"
+        },
+        {
+          "label": "docs/Storybook使用指南.md",
+          "description": "Guía del sitio de documentación de componentes (npm run storybook, puerto 6006)"
+        }
+      ]
+    }
+  }
+}

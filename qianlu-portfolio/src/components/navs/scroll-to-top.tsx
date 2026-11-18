@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import GlassSurface from '@/components/glass/GlassSurface';
 import { ArrowUp } from 'lucide-react';
 
 export default function ScrollToTop() {
   const [isVisible, setIsVisible] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const toggleVisibility = () => {
@@ -47,7 +49,7 @@ export default function ScrollToTop() {
         <button
           type="button"
           onClick={scrollToTop}
-          aria-label="回到顶部"
+          aria-label={t('action.backToTop')}
           className="text-ink group ease-spring grid size-12 cursor-pointer place-items-center rounded-full transition-transform duration-200 hover:scale-105 active:scale-95"
         >
           <ArrowUp className="size-5 transition-transform duration-200 group-hover:-translate-y-0.5" />

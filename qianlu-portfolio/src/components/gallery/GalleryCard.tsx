@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import PhotoPicture from '@/components/photo-picture';
 import { useImageLoaded } from '@/hooks/use-image-loaded';
 import { useKbPressProps } from '@/lib/press';
@@ -12,6 +14,7 @@ interface GalleryCardProps {
 }
 
 export default function GalleryCard({ photo, onOpen, onError }: GalleryCardProps) {
+  const { t } = useTranslation('home');
   const kb = useKbPressProps();
   const { ref, loaded, onLoad } = useImageLoaded();
 
@@ -31,7 +34,7 @@ export default function GalleryCard({ photo, onOpen, onError }: GalleryCardProps
         // 浮起与按压共用一条过渡，交互回弹走弹性令牌（§13.2）
         'ease-spring transition-[transform,box-shadow,border-color] duration-200'
       )}
-      aria-label={`查看作品 ${photo.title}`}
+      aria-label={t('gallery.cardAria', { title: photo.title })}
     >
       <span data-slot="photo-frame" className="relative block w-full" style={{ aspectRatio }}>
         {/* 加载完成前按真实宽高比显示骨架，避免空白等待与布局抖动；button 内只允许 phrasing 内容，故用 span 而非 Skeleton(div) */}

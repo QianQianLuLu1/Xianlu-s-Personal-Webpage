@@ -1,0 +1,40 @@
+{
+  "nav": {
+    "home": "Home",
+    "tools": "Open-Source Tools",
+    "journey": "Photography Journey",
+    "gallery": "Portfolio",
+    "about": "About",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "lang": {
+    "switch": "Change language"
+  },
+  "theme": {
+    "toLight": "Switch to light mode",
+    "toDark": "Switch to dark mode"
+  },
+  "action": {
+    "copy": "Copy",
+    "copied": "Copied",
+    "copyCode": "Copy code",
+    "close": "Close",
+    "refresh": "Reload page",
+    "retry": "Refresh and retry",
+    "backToTop": "Back to top"
+  },
+  "footer": {
+    "copyright": "© {{year}} QianLu · Open source under the MIT License",
+    "attribution": "Built on <1>geekpius/portfolio</1> (MIT)"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred while rendering this page. Refreshing usually fixes it; if it keeps happening, feel free to reach out via social channels."
+  },
+  "meta": {
+    "title": "纤璐不会玩摄影",
+    "description": "Photography, computer-science explainers and open-source tools by 纤璐不会玩摄影 — breaking the stereotype that styling-game players can't understand computers.",
+    "projectTitle": "{{name}} · Open-Source Tools | 纤璐不会玩摄影"
+  }
+}

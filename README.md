@@ -12,9 +12,9 @@
 
 - 首页区块：首页、开源工具、摄影之路、作品集、关于（`qianlu-portfolio/src/components/navs/header.tsx`）。
 - 两条路由：`/` 与 `/projects/:projectId`，详情页 id 为 `flashgaze`、`nikki-gallery`（`qianlu-portfolio/src/App.tsx`、`qianlu-portfolio/src/data/project-details.ts`）。
-- 「开源工具」专区的客观字段由 `qianlu-portfolio/scripts/sync-github-projects.mjs` 从 GitHub REST API 同步 `QianQianLuLu1/{MeowStarMap,FlashGaze}`；`npm run build` 前会校验 `qianlu-portfolio/src/data/projects.meta.json` 的新鲜度（24 小时），GitHub 不可达时回退到 `qianlu-portfolio/src/data/projects.fallback.ts`。细节见 `qianlu-portfolio/README.md` 的「GitHub 专区数据同步」。（上述脚本与数据文件为本地工作区产物，未随仓库分发）
+- 「开源工具」专区的客观字段由 `qianlu-portfolio/src/data/projects.generated.ts` 承载，GitHub 不可达时回退到 `qianlu-portfolio/src/data/projects.fallback.ts`；当前基线为 2026-11-08 从历史构建产物逐字重建的版本（`qianlu-portfolio/src/data/projects.meta.json` 标记 `reconstructed=true`）。联网同步脚本 `qianlu-portfolio/scripts/sync-github-projects.mjs` 未随工作区恢复，`npm run github:sync` 暂不可用；构建期新鲜度门 `qianlu-portfolio/scripts/check-baseline-freshness.mjs` 仍有效：`degraded`、超 24 小时未刷新与重建基线默认拒绝构建，重建基线须以 `QIANLU_ACCEPT_RECONSTRUCTED_BASELINE=1` 显式放行。细节见 `qianlu-portfolio/README.md` 的「GitHub 专区数据同步」。
 - 站点公开的社交渠道见 `qianlu-portfolio/src/data/social.ts`。
-- 现状：`qianlu-portfolio/dist/` 已有构建产物，`qianlu-portfolio/tests/` 有 Vitest 用例，`qianlu-portfolio/` 下有多份中文实施计划与验收报告。构建为纯静态托管，`qianlu-portfolio/vite.config.ts` 在构建后把 `dist/index.html` 复制为 `dist/404.html`，以支持 SPA 直达与刷新。（`dist/` 为本地构建产物，已忽略）
+- 现状：`qianlu-portfolio/tests/` 有 Vitest 用例；`qianlu-portfolio/` 下当前无 `dist/` 构建产物，需要时以 `npm run build` 重出（当前基线须放行，见上条）。构建为纯静态托管，`qianlu-portfolio/vite.config.ts` 在构建后把 `dist/index.html` 复制为 `dist/404.html`，以支持 SPA 直达与刷新。（`dist/` 为本地构建产物，已忽略）
 - 部署状态：目前暂无正式部署平台；仓库内无 CI 配置。
 
 ## 使用与运行方式
@@ -27,16 +27,16 @@
 ```bash
 npm run dev        # vite，http://localhost:5173
 npm run build      # 校验基线新鲜度 + tsc -b + vite build，产出 qianlu-portfolio/dist/
+                   # （当前基线为重建版，须以 QIANLU_ACCEPT_RECONSTRUCTED_BASELINE=1 放行）
 npm run preview    # vite preview，本地预览构建产物
 npm test           # vitest run
 npm run lint       # eslint .
 npm run typecheck  # tsc -b --noEmit
 npm run format     # prettier --write
-npm run github:sync -- --force   # 联网刷新 GitHub 专区数据
 npm run audit:licenses           # 依赖许可证白名单审计
 ```
 
-`github:sync` 需要 `GITHUB_TOKEN` 环境变量，新鲜度阈值可用 `GITHUB_SYNC_MAX_AGE_MS` 覆盖；另有 `test:watch` 与 `assets:build` 两个脚本。完整命令清单见两个 `package.json`。
+另有 `test:watch` 与 `assets:build` 两个脚本；新鲜度阈值可用 `GITHUB_SYNC_MAX_AGE_MS` 覆盖。`github:sync` 所依赖的同步脚本当前缺失、暂不可用（见 `qianlu-portfolio/README.md` 的 2026-11-08 重建基线说明）。完整命令清单见两个 `package.json`。
 
 入口链：`qianlu-portfolio/index.html` → `qianlu-portfolio/src/main.tsx` → `qianlu-portfolio/src/App.tsx`；静态资源在 `qianlu-portfolio/public/`。
 
@@ -65,8 +65,6 @@ npm run audit:licenses           # 依赖许可证白名单审计
 ├── .gitignore                         # 仓库根 Git 边界
 ├── .gitattributes                     # 换行策略
 ├── package.json                       # 命令转发层，无依赖
-├── hooks/                             # 本地 Git 钩子（未纳入版本控制）
-├── .qoder/rules/qianlu-portfolio.md   # 项目约定与编码规范
 └── qianlu-portfolio/                  # 唯一的网站应用
     ├── README.md                      # 应用级说明
     ├── package.json / package-lock.json
@@ -76,13 +74,12 @@ npm run audit:licenses           # 依赖许可证白名单审计
     ├── public/                        # 静态资源(favicon.svg、photos/、projects/)
     ├── scripts/                       # 构建与数据同步脚本
     ├── tests/                         # Vitest 用例
-    └── dist/                          # 构建产物(已忽略)
+    └── dist/                          # 构建产物(按需生成，已忽略)
 ```
 
 ## 更多说明
 
 - 应用级说明（技术栈、GitHub 专区同步、质量检查、构建、致谢）：[`qianlu-portfolio/README.md`](qianlu-portfolio/README.md)
-- 项目约定、目录职责、编码规范与风险边界：[`.qoder/rules/qianlu-portfolio.md`](.qoder/rules/qianlu-portfolio.md)
 - `qianlu-portfolio/` 下的中文实施计划与验收报告为本地一次性产物，本轮已清理并在根 `.gitignore` 为 9 份登记精确忽略规则；下列文件名仅作历史索引，不随仓库分发：`qianlu-portfolio/全量GUI黑盒验收报告_2026-11-07.md`、`qianlu-portfolio/GitHub专区同步改造实施计划_2026-11-06.md`。
 
 ## 授权与联系方式
